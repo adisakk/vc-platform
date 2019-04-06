@@ -24,5 +24,6 @@ namespace VirtoCommerce.Platform.Core.Security
         Permission[] GetUserPermissions(string userName);
         Task<bool> IsUserLockedAsync(string userId);
         Task<SecurityResult> UnlockUserAsync(string userId);
+        bool isAdministrator(string userName);
     }
 }

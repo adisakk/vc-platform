@@ -410,6 +410,17 @@ namespace VirtoCommerce.Platform.Data.Security
             return _cacheManager.Get("AllPermissions", SecurityConstants.CacheRegion, LoadAllPermissions);
         }
 
+        public virtual bool isAdministrator(string userName)
+        {
+            var user = FindByName(userName, UserDetails.Full);
+            var result = user != null && user.UserState == AccountState.Approved;
+            if (result && user.IsAdministrator)
+            {
+                return true;
+            }
+            return false;
+        }
+
         public virtual bool UserHasAnyPermission(string userName, string[] scopes, params string[] permissionIds)
         {
             if (permissionIds == null)
