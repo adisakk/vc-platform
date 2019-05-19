@@ -64,7 +64,6 @@ using VirtoCommerce.Platform.Web.Controllers.Api;
 using VirtoCommerce.Platform.Web.Hangfire;
 using VirtoCommerce.Platform.Web.Modularity;
 using VirtoCommerce.Platform.Web.PushNotifications;
-using VirtoCommerce.Platform.Web.Resources;
 using VirtoCommerce.Platform.Web.SignalR;
 using VirtoCommerce.Platform.Web.Swagger;
 using WebGrease.Extensions;
@@ -274,6 +273,7 @@ namespace VirtoCommerce.Platform.Web
             RecurringJob.AddOrUpdate<SendNotificationsJobs>("SendNotificationsJob", x => x.Process(), "*/1 * * * *");
 
             var notificationManager = container.Resolve<INotificationManager>();
+            var assembly = typeof(LiquidNotificationTemplateResolver).Assembly;
 
             notificationManager.RegisterNotificationType(() => new RegistrationEmailNotification(container.Resolve<IEmailNotificationSendingGateway>())
             {
@@ -281,20 +281,20 @@ namespace VirtoCommerce.Platform.Web
                 Description = "This notification is sent by email to a client when he finishes registration",
                 NotificationTemplate = new NotificationTemplate
                 {
-                    Subject = PlatformNotificationResource.RegistrationNotificationSubject,
-                    Body = PlatformNotificationResource.RegistrationNotificationBody,
+                    Body = assembly.GetManifestResourceStream("VirtoCommerce.Platform.Data.Notifications.Templates.RegistrationNotificationTemplateBody.html").ReadToString(),
+                    Subject = assembly.GetManifestResourceStream("VirtoCommerce.Platform.Data.Notifications.Templates.RegistrationNotificationTemplateSubject.html").ReadToString(),
                     Language = "en-US",
                 }
             });
 
             notificationManager.RegisterNotificationType(() => new ResetPasswordEmailNotification(container.Resolve<IEmailNotificationSendingGateway>())
             {
-                DisplayName = "Reset password notification",
+                DisplayName = "Reset password email notification",
                 Description = "This notification is sent by email to a client upon reset password request",
                 NotificationTemplate = new NotificationTemplate
                 {
-                    Subject = PlatformNotificationResource.ResetPasswordNotificationSubject,
-                    Body = PlatformNotificationResource.ResetPasswordNotificationBody,
+                    Body = assembly.GetManifestResourceStream("VirtoCommerce.Platform.Data.Notifications.Templates.ResetPasswordNotificationTemplateBody.html").ReadToString(),
+                    Subject = assembly.GetManifestResourceStream("VirtoCommerce.Platform.Data.Notifications.Templates.ResetPasswordNotificationTemplateSubject.html").ReadToString(),
                     Language = "en-US",
                 }
             });
@@ -305,8 +305,8 @@ namespace VirtoCommerce.Platform.Web
                 Description = "This notification contains a security token for two factor authentication",
                 NotificationTemplate = new NotificationTemplate
                 {
-                    Subject = PlatformNotificationResource.TwoFactorNotificationSubject,
-                    Body = PlatformNotificationResource.TwoFactorNotificationBody,
+                    Body = assembly.GetManifestResourceStream("VirtoCommerce.Platform.Data.Notifications.Templates.TwoFactorNotificationTemplateBody.html").ReadToString(),
+                    Subject = assembly.GetManifestResourceStream("VirtoCommerce.Platform.Data.Notifications.Templates.TwoFactorNotificationTemplateSubject.html").ReadToString(),
                     Language = "en-US",
                 }
             });
@@ -317,8 +317,32 @@ namespace VirtoCommerce.Platform.Web
                 Description = "This notification contains a security token for two factor authentication",
                 NotificationTemplate = new NotificationTemplate
                 {
-                    Subject = PlatformNotificationResource.TwoFactorNotificationSubject,
-                    Body = PlatformNotificationResource.TwoFactorNotificationBody,
+                    Body = assembly.GetManifestResourceStream("VirtoCommerce.Platform.Data.Notifications.Templates.TwoFactorNotificationTemplateBody.html").ReadToString(),
+                    Subject = assembly.GetManifestResourceStream("VirtoCommerce.Platform.Data.Notifications.Templates.TwoFactorNotificationTemplateSubject.html").ReadToString(),
+                    Language = "en-US",
+                }
+            });
+
+            notificationManager.RegisterNotificationType(() => new ResetPasswordSmsNotification(container.Resolve<ISmsNotificationSendingGateway>())
+            {
+                DisplayName = "Reset password sms notification",
+                Description = "This notification is sent by sms to a client upon reset password request",
+                NotificationTemplate = new NotificationTemplate
+                {
+                    Body = assembly.GetManifestResourceStream("VirtoCommerce.Platform.Data.Notifications.Templates.ResetPasswordSmsNotificationTemplateBody.html").ReadToString(),
+                    Subject = assembly.GetManifestResourceStream("VirtoCommerce.Platform.Data.Notifications.Templates.ResetPasswordSmsNotificationTemplateSubject.html").ReadToString(),
+                    Language = "en-US",
+                }
+            });
+
+            notificationManager.RegisterNotificationType(() => new ChangePhoneNumberSmsNotification(container.Resolve<ISmsNotificationSendingGateway>())
+            {
+                DisplayName = "Change phone number sms notification",
+                Description = "This notification is sent by sms to a client upon change phone number request",
+                NotificationTemplate = new NotificationTemplate
+                {
+                    Body = assembly.GetManifestResourceStream("VirtoCommerce.Platform.Data.Notifications.Templates.ChangePhoneNumberSmsNotificationTemplateBody.html").ReadToString(),
+                    Subject = assembly.GetManifestResourceStream("VirtoCommerce.Platform.Data.Notifications.Templates.ChangePhoneNumberSmsNotificationTemplateSubject.html").ReadToString(),
                     Language = "en-US",
                 }
             });
@@ -373,7 +397,14 @@ namespace VirtoCommerce.Platform.Web
             return assembly;
         }
 
-        private static void InitializePlatform(IAppBuilder app, IUnityContainer container, IPathMapper pathMapper, string connectionString, HangfireLauncher hangfireLauncher, string modulesPath, ModuleInitializerOptions moduleInitializerOptions)
+        private static void InitializePlatform(
+            IAppBuilder app,
+            IUnityContainer container,
+            IPathMapper pathMapper,
+            string connectionString,
+            HangfireLauncher hangfireLauncher,
+            string modulesPath,
+            ModuleInitializerOptions moduleInitializerOptions)
         {
             container.RegisterType<ICurrentUser, CurrentUser>(new HttpContextLifetimeManager());
             container.RegisterType<IUserNameResolver, UserNameResolver>();
@@ -406,12 +437,25 @@ namespace VirtoCommerce.Platform.Web
             app.SanitizeThreadCulture();
             ICacheManager<object> cacheManager = null;
 
+            var redisConnectionString = ConfigurationHelper.GetConnectionStringValue("RedisConnectionString");
+
             //Try to load cache configuration from web.config first
             //Should be aware to using Web cache cache handle because it not worked in native threads. (Hangfire jobs)
-            var cacheManagerSection = ConfigurationManager.GetSection(CacheManagerSection.DefaultSectionName) as CacheManagerSection;
-            if (cacheManagerSection != null && cacheManagerSection.CacheManagers.Any(p => p.Name.EqualsInvariant("platformCache")))
+            if (ConfigurationManager.GetSection(CacheManagerSection.DefaultSectionName) is CacheManagerSection cacheManagerSection)
             {
-                var configuration = ConfigurationBuilder.LoadConfiguration("platformCache");
+                CacheManagerConfiguration configuration = null;
+
+                var defaultCacheManager = cacheManagerSection.CacheManagers.FirstOrDefault(p => p.Name.EqualsInvariant("platformCache"));
+                if (defaultCacheManager != null)
+                {
+                    configuration = ConfigurationBuilder.LoadConfiguration(defaultCacheManager.Name);
+                }
+
+                var redisCacheManager = cacheManagerSection.CacheManagers.FirstOrDefault(p => p.Name.EqualsInvariant("redisPlatformCache"));
+                if (redisConnectionString != null && redisCacheManager != null)
+                {
+                    configuration = ConfigurationBuilder.LoadConfiguration(redisCacheManager.Name);
+                }
 
                 if (configuration != null)
                 {
@@ -420,6 +464,8 @@ namespace VirtoCommerce.Platform.Web
                     cacheManager = CacheFactory.FromConfiguration<object>(configuration);
                 }
             }
+
+            // Create a default cache manager if there is no any others
             if (cacheManager == null)
             {
                 cacheManager = CacheFactory.Build("platformCache", settings =>
@@ -606,7 +652,15 @@ namespace VirtoCommerce.Platform.Web
                                     "Quarters",
                                     "Years"
                                 }
-                            }
+                            },
+                            new ModuleSetting
+                            {
+                                Name = "VirtoCommerce.Platform.UI.FourDecimalsInMoney",
+                                ValueType = ModuleSetting.TypeBoolean,
+                                Title = "Show 4 decimal digits for money",
+                                Description = "Set to true to show 4 decimal digits for money. By default - false, 2 decimal digits are shown.",
+                                DefaultValue = "false",
+                            },
                         }
                     },
                     new ModuleSettingsGroup
@@ -645,17 +699,15 @@ namespace VirtoCommerce.Platform.Web
 
             #region Notifications
 
-            var redisConnectionString = ConfigurationManager.ConnectionStrings["RedisConnectionString"];
-
             // Redis
-            if (redisConnectionString != null && !string.IsNullOrEmpty(redisConnectionString.ConnectionString))
+            if (!string.IsNullOrEmpty(redisConnectionString))
             {
                 // Cache
-                RedisConfigurations.AddConfiguration(new RedisConfiguration("redisConnectionString", redisConnectionString.ConnectionString));
+                RedisConfigurations.AddConfiguration(new RedisConfiguration("redisConnectionString", redisConnectionString));
 
                 // SignalR
                 // https://stackoverflow.com/questions/29885470/signalr-scaleout-on-azure-rediscache-connection-issues
-                GlobalHost.DependencyResolver.UseRedis(new RedisScaleoutConfiguration(redisConnectionString.ConnectionString, "VirtoCommerce.Platform.SignalR"));
+                GlobalHost.DependencyResolver.UseRedis(new RedisScaleoutConfiguration(redisConnectionString, "VirtoCommerce.Platform.SignalR"));
             }
 
             // SignalR 
@@ -695,8 +747,37 @@ namespace VirtoCommerce.Platform.Web
                 container.RegisterInstance(emailNotificationSendingGateway);
             }
 
-            var defaultSmsNotificationSendingGateway = new DefaultSmsNotificationSendingGateway();
-            container.RegisterInstance<ISmsNotificationSendingGateway>(defaultSmsNotificationSendingGateway);
+            ISmsNotificationSendingGateway smsNotificationSendingGateway = null;
+            var smsNotificationSendingGatewayName = ConfigurationHelper.GetAppSettingsValue("VirtoCommerce:Notifications:SmsGateway", "Default");
+
+            if (smsNotificationSendingGatewayName.EqualsInvariant("Default"))
+            {
+                smsNotificationSendingGateway = new DefaultSmsNotificationSendingGateway();
+            }
+            else if (smsNotificationSendingGatewayName.EqualsInvariant("Twilio"))
+            {
+                smsNotificationSendingGateway = new TwilioSmsNotificationSendingGateway(new TwilioSmsGatewayOptions
+                {
+                    AccountId = ConfigurationHelper.GetAppSettingsValue("VirtoCommerce:Notifications:SmsGateway:AccountId"),
+                    AccountPassword = ConfigurationHelper.GetAppSettingsValue("VirtoCommerce:Notifications:SmsGateway:AccountPassword"),
+                    Sender = ConfigurationHelper.GetAppSettingsValue("VirtoCommerce:Notifications:SmsGateway:Sender"),
+                });
+            }
+            else if (smsNotificationSendingGatewayName.EqualsInvariant("ASPSMS"))
+            {
+                smsNotificationSendingGateway = new AspsmsSmsNotificationSendingGateway(new AspsmsSmsGatewayOptions
+                {
+                    AccountId = ConfigurationHelper.GetAppSettingsValue("VirtoCommerce:Notifications:SmsGateway:AccountId"),
+                    AccountPassword = ConfigurationHelper.GetAppSettingsValue("VirtoCommerce:Notifications:SmsGateway:AccountPassword"),
+                    Sender = ConfigurationHelper.GetAppSettingsValue("VirtoCommerce:Notifications:SmsGateway:Sender"),
+                    JsonApiUri = ConfigurationHelper.GetAppSettingsValue("VirtoCommerce:Notifications:SmsGateway:ASPSMS:JsonApiUri"),
+                });
+            }
+
+            if (smsNotificationSendingGateway != null)
+            {
+                container.RegisterInstance(smsNotificationSendingGateway);
+            }
 
             #endregion
 
