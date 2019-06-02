@@ -46,6 +46,47 @@ angular.module('platformWebApp')
                 ]
             });
 
+        $stateProvider.state('registerDialog',
+            {
+                url: '/register',
+                templateUrl: '$(Platform)/Scripts/app/security/register/register.tpl.html',
+                controller: [
+                    '$scope', 'platformWebApp.accounts', function ($scope, accounts) {
+
+                        $scope.user = {};
+                        $scope.regisError = null;
+                        $scope.regisProgress = false;
+                        $scope.regisSuccess = false;
+
+                        $scope.register = function () {
+
+                            // Clear any previous security errors
+                            $scope.regisError = null;
+                            $scope.regisProgress = true;
+                            $scope.regisSuccess = false;
+
+                            // Try to register
+                            if ($scope.user.password != $scope.user.newPassword2) {
+                                $scope.regisError = 'Error: passwords don\'t match!';
+                                return;
+                            }
+
+                            $scope.regisError = undefined;
+                            var postData = angular.copy($scope.user);
+                            postData.newPassword2 = undefined;
+
+                            accounts.register(postData, function () {
+                                $scope.regisSuccess = true;
+                            },
+
+                            function (response) {
+                                $scope.regisError = 'Registration error! - ' + response.data.errors[0];
+                            });
+                        };
+                    }
+                ]
+            });
+
         $stateProvider.state('forgotpasswordDialog',
             {
                 url: '/forgotpassword',

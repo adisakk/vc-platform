@@ -346,6 +346,31 @@ namespace VirtoCommerce.Platform.Web.Controllers.Api
         /// </summary>
         /// <param name="user">User details.</param>
         [HttpPost]
+        [Route("users/register")]
+        [ResponseType(typeof(SecurityResult))]
+        [SwaggerResponse(HttpStatusCode.OK, type: typeof(SecurityResult))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, type: typeof(SecurityResult))]
+        //[CheckPermission(Permission = PredefinedPermissions.SecurityCreate)]
+        [AllowAnonymous]
+        public async Task<IHttpActionResult> RegisterAsync(ApplicationUserExtended user)
+        {
+            var roleRequest = new RoleSearchRequest();
+            roleRequest.Keyword = "Business Partner";
+            roleRequest.TakeCount = 1;
+            var roleResponse = _roleService.SearchRoles(roleRequest);
+            user.Roles = roleResponse.Roles;
+            user.UserType = "Business Partner";
+            user.UserState = AccountState.PendingApproval;
+            
+            var result = await _securityService.CreateAsync(user);
+            return Content(result.Succeeded ? HttpStatusCode.OK : HttpStatusCode.BadRequest, result);
+        }
+
+        /// <summary>
+        /// Create new user
+        /// </summary>
+        /// <param name="user">User details.</param>
+        [HttpPost]
         [Route("users/create")]
         [ResponseType(typeof(SecurityResult))]
         [SwaggerResponse(HttpStatusCode.OK, type: typeof(SecurityResult))]

@@ -120,7 +120,8 @@ namespace VirtoCommerce.Platform.Data.Security
                         //Use for memberId same account id if its not set (Our current case Contact member 1 - 1 Account workaround). But client may use memberId as for any outer id.
                         dbAcount.MemberId = dbAcount.Id;
                     }
-                    dbAcount.AccountState = AccountState.Approved.ToString();
+                    //dbAcount.AccountState = AccountState.Approved.ToString();
+                    dbAcount.AccountState = AccountState.PendingApproval.ToString();
 
                     repository.Add(dbAcount);
 

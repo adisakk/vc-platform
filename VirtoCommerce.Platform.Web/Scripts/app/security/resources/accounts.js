@@ -11,6 +11,7 @@ angular.module('platformWebApp')
         validatePassword: { url: 'api/platform/security/validatepassword', method: 'POST' },
         update: { method: 'PUT' },
         locked: { url: 'api/platform/security/users/:id/locked', method: 'GET' },
-        unlock: { url: 'api/platform/security/users/:id/unlock', method: 'POST' }
+        unlock: { url: 'api/platform/security/users/:id/unlock', method: 'POST' },
+        register: { url: 'api/platform/security/users/register', method: 'POST' }
     });
 }]);

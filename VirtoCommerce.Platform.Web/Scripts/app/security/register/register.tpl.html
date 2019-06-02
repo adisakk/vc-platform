@@ -1,0 +1,81 @@
+<div class="window">
+    <div class="window-status" ng-if="loginProgress">
+        <div class="progress-bar"></div>
+    </div>
+    <header class="window-head">
+        <img class="__logo" ng-src="{{uiCustomization.contrast_logo || 'Content/themes/main/images/contrast-logo.png'}}" />
+        <span class="window-t">{{ 'platform.blades.register.labels.register-bp-account' | translate: (uiCustomization.title ? uiCustomization : { title: 'Virto Commerce' }) }}</span>
+    </header>
+    <div class="window-cnt">
+        <form class="form" novalidate ng-submit="register()" name="loginForm">
+            <div class="form-group">
+                <label class="form-label">{{ 'platform.blades.register.labels.username' | translate }}</label>
+                <div class="form-input">
+                    <input type="text" name="userName" ng-model="user.userName" required autofocus>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">{{ 'platform.blades.register.labels.email' | translate }}</label>
+                <div class="form-input">
+                    <input type="text" name="email" ng-model="user.email" required autofocus>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">{{ 'platform.blades.register.labels.password' | translate }}</label>
+                <div class="form-input">
+                    <input name="password" type="password" ng-model="user.password" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">{{ 'platform.blades.register.labels.repeat-password' | translate }}</label>
+                <div class="form-input">
+                    <input name="newPassword2" type="password" ng-model="user.newPassword2" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">{{ 'platform.blades.register.labels.firstname' | translate }}</label>
+                <div class="form-input">
+                    <input name="name" type="text" ng-model="user.name" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">{{ 'platform.blades.register.labels.lastname' | translate }}</label>
+                <div class="form-input">
+                    <input name="lastname" type="text" ng-model="user.lastname" required>
+                </div>
+            </div>
+
+            <!--Global variable sets on _Layout.cshtml and defined in Web.config-->
+            <div class="note" ng-if="demoCredentials">
+                <p class="text">Demo access credentials - Login: <b>{{ demoCredentials[0] }} </b> Password: <b>{{ demoCredentials[1] }}</b></p>
+            </div>
+            <div class="form-group">
+                <div class="form-label" ng-if="regisSuccess" style="color:darkgreen;align-content:center">
+                    {{ 'platform.blades.register.labels.success' | translate }}
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="form-error" ng-if="regisError" style="align-content:center">
+                    {{regisError}}
+                </div>
+            </div>
+
+            <div class="clearfix">
+                <div class="column">
+                    <div class="form-group">
+                        <button ui-sref="loginDialog" class="btn __cancel" ng-disabled="isLoading">
+                            <span>{{ 'platform.blades.register.labels.back' | translate }}</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="form-group __right">
+                        <button class="btn" type="submit" ng-disabled="loginForm.$invalid||loginProgress">
+                            <span>{{ 'platform.blades.register.labels.submit' | translate }}</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

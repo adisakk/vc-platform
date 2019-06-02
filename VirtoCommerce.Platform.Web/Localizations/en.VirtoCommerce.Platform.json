@@ -541,6 +541,22 @@
           "log-in": "Log in"
         }
       },
+      "register": {
+        "labels": {
+          "register-bp-account": "Register an account",
+          "register-bp-account-link": "Register an account.",
+          "username": "Username",
+          "email": "Email",
+          "password": "Password",
+          "repeat-password": "Repeat password",
+          "title": "Title",
+          "firstname": "Firstname",
+          "lastname": "Lastname",
+          "submit": "Submit",
+          "back": "Back",
+          "success": "Registration successful."
+        }
+      },
       "forgotpassword": {
         "title": "Forgot your password?",
         "labels": {

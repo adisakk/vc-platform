@@ -404,6 +404,7 @@
     <Content Include="Scripts\app\security\dialogs\forgotPasswordDialog.tpl.html" />
     <Content Include="Scripts\app\security\directives\password-input.js" />
     <Content Include="Scripts\app\security\directives\password-input.tpl.html" />
+    <Content Include="Scripts\app\security\register\register.tpl.html" />
     <Content Include="Scripts\app\security\services\authDataStorage.js" />
     <Content Include="Scripts\app\security\services\externalSignInService.js" />
     <Content Include="Scripts\app\security\services\passwordValidationService.js" />
