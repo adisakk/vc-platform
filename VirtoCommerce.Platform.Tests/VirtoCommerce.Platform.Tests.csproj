@@ -105,6 +105,7 @@
     <Compile Include="Notifications\Models\CustomerOrder.cs" />
     <Compile Include="Notifications\Models\LineItem.cs" />
     <Compile Include="Notifications\NotificationTests.cs" />
+    <Compile Include="Notifications\ShippingLabelNotification.cs" />
     <Compile Include="Notifications\OrderInvoiceNotification.cs" />
     <Compile Include="Notifications\OrderNotification.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
