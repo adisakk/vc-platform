@@ -75,11 +75,11 @@ angular.module('platformWebApp')
     // Open document blade
     $scope.openDocumentBlade = function () {
 
-        blade.userProfile = userProfile;
+        blade.userId = userProfile.id;
  
         var newBlade = {
             id: "userProfileAsset",
-            userProfile: blade.userProfile,
+            userId: blade.userId,
             controller: 'platformWebApp.userProfile.assetListController',
             template: '$(Platform)/Scripts/app/userProfile/blades/asset-list.tpl.html'
         };
