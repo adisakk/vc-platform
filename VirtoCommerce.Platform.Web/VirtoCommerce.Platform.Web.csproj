@@ -408,6 +408,12 @@
     <Content Include="Scripts\app\security\services\authDataStorage.js" />
     <Content Include="Scripts\app\security\services\externalSignInService.js" />
     <Content Include="Scripts\app\security\services\passwordValidationService.js" />
+    <Content Include="Scripts\app\security\widgets\accountAssetsWidget.js" />
+    <Content Include="Scripts\app\security\widgets\accountAssetsWidget.tpl.html" />
+    <Content Include="Scripts\app\userProfile\blades\asset-list.js" />
+    <Content Include="Scripts\app\userProfile\blades\asset-list.tpl.html" />
+    <Content Include="Scripts\app\userProfile\blades\asset-upload.js" />
+    <Content Include="Scripts\app\userProfile\blades\asset-upload.tpl.html" />
     <Content Include="Scripts\app\userProfile\userProfile.js" />
     <Content Include="Scripts\common\directives\angular-scroll-complete.js" />
     <Content Include="Scripts\common\directives\dateTime-picker.js" />

@@ -1,8 +1,9 @@
-﻿namespace VirtoCommerce.Platform.Core.Security
+namespace VirtoCommerce.Platform.Core.Security
 {
     public enum AccountType
     {
         Customer,
+        BusinessPartner,
         Manager,
         Administrator
     }

@@ -121,7 +121,8 @@ namespace VirtoCommerce.Platform.Data.Security
                         dbAcount.MemberId = dbAcount.Id;
                     }
                     //dbAcount.AccountState = AccountState.Approved.ToString();
-                    dbAcount.AccountState = AccountState.PendingApproval.ToString();
+                    //dbAcount.AccountState = AccountState.PendingApproval.ToString();
+                    dbAcount.AccountState = user.UserState.ToString();
 
                     repository.Add(dbAcount);
 
@@ -485,7 +486,8 @@ namespace VirtoCommerce.Platform.Data.Security
             //For managers always allow to call api
             if (result && permissionIds.Length == 1 && permissionIds.Contains(PredefinedPermissions.SecurityCallApi)
                && (string.Equals(user.UserType, AccountType.Manager.ToString(), StringComparison.InvariantCultureIgnoreCase) ||
-                    string.Equals(user.UserType, AccountType.Administrator.ToString(), StringComparison.InvariantCultureIgnoreCase)))
+                    string.Equals(user.UserType, AccountType.Administrator.ToString(), StringComparison.InvariantCultureIgnoreCase) ||
+                    string.Equals(user.UserType, AccountType.BusinessPartner.ToString(), StringComparison.InvariantCultureIgnoreCase)))
             {
                 return true;
             }

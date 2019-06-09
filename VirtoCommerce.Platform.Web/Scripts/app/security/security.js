@@ -297,6 +297,10 @@ angular.module('platformWebApp')
                 controller: 'platformWebApp.changeLog.operationsWidgetController',
                 template: '$(Platform)/Scripts/app/changeLog/widgets/operations-widget.tpl.html'
             }, 'accountDetail');
+            widgetService.registerWidget({
+                controller: 'platformWebApp.accountAssetsWidgetController',
+                template: '$(Platform)/Scripts/app/security/widgets/accountAssetsWidget.tpl.html'
+            }, 'accountDetail');
 
             //register setup wizard step - change admin password
             setupWizard.registerStep({

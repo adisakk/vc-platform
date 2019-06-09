@@ -1,6 +1,6 @@
 angular.module('platformWebApp')
-.controller('platformWebApp.accountDetailController', ['$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.metaFormsService', 'platformWebApp.accounts', 'platformWebApp.roles', 'platformWebApp.dialogService', 'platformWebApp.settings',
-    function ($scope, bladeNavigationService, metaFormsService, accounts, roles, dialogService, settings) {
+    .controller('platformWebApp.accountDetailController', ['$scope', 'platformWebApp.bladeNavigationService', 'platformWebApp.metaFormsService', 'platformWebApp.accounts', 'platformWebApp.roles', 'platformWebApp.dialogService', 'platformWebApp.settings', 'platformWebApp.assets.api',
+    function ($scope, bladeNavigationService, metaFormsService, accounts, roles, dialogService, settings, assets) {
         var blade = $scope.blade;
         blade.updatePermission = 'platform:security:update';
         blade.promise = roles.search({ takeCount: 10000 }).$promise;
@@ -25,6 +25,7 @@ angular.module('platformWebApp')
             }); 
             blade.accountTypes = settings.getValues({ id: 'VirtoCommerce.Platform.Security.AccountTypes' });
             userStateCommand.updateName();
+            blade.accountAssets = assets.query({ keyword: "",  folderUrl: '/documents/' + blade.currentEntity.id });
             blade.isLoading = false;
         };
 

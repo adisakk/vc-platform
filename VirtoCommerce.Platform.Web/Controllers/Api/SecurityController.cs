@@ -80,7 +80,7 @@ namespace VirtoCommerce.Platform.Web.Controllers.Api
                     return Ok(user);
                 }
             }
-
+            
             if (signInStatus == SignInStatus.RequiresVerification)
             {
                 // TODO: Add UI for choosing a two factor provider, sending the code and verifying the entered code.
@@ -355,11 +355,11 @@ namespace VirtoCommerce.Platform.Web.Controllers.Api
         public async Task<IHttpActionResult> RegisterAsync(ApplicationUserExtended user)
         {
             var roleRequest = new RoleSearchRequest();
-            roleRequest.Keyword = "Business Partner";
+            roleRequest.Keyword = "Business Partner (Pre-Approve)";
             roleRequest.TakeCount = 1;
             var roleResponse = _roleService.SearchRoles(roleRequest);
             user.Roles = roleResponse.Roles;
-            user.UserType = "Business Partner";
+            user.UserType = "BusinessPartner";
             user.UserState = AccountState.PendingApproval;
             
             var result = await _securityService.CreateAsync(user);

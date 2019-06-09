@@ -657,6 +657,8 @@
       "user-profile": {
         "title": "User profile",
         "labels": {
+          "document": "Upload Document",
+          "document-description": "Upload document for approval process.",
           "language": "Language",
           "language-description": "Display language. Clear to use browser or fallback language.",
           "regional-format": "Regional format",
@@ -749,6 +751,10 @@
       "accountApi": {
         "title": "API Accounts",
         "blade-subtitle": "API acounts"
+      },
+      "accountAssets": {
+        "title": "Uploaded documents",
+        "blade-subtitle": "Uploaded documents"
       },
       "accountRoles": {
         "title": "Roles",

@@ -72,6 +72,20 @@ angular.module('platformWebApp')
         blade.currentTimeZone = getNameByCode($scope.timeZones, i18n.getTimeZone());
     });
 
+    // Open document blade
+    $scope.openDocumentBlade = function () {
+
+        blade.userProfile = userProfile;
+ 
+        var newBlade = {
+            id: "userProfileAsset",
+            userProfile: blade.userProfile,
+            controller: 'platformWebApp.userProfile.assetListController',
+            template: '$(Platform)/Scripts/app/userProfile/blades/asset-list.tpl.html'
+        };
+        bladeNavigationService.showBlade(newBlade, blade);
+    };
+
     // Do not update user profile while blade is loading (change events occurs because user profile loaded)
 
     $scope.setLanguage = function () {

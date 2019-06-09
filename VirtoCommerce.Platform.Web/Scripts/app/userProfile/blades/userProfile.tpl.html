@@ -3,6 +3,10 @@
         <div class="inner-block">
             <form class="form list __info">
                 <div class="form-group">
+                    <button class="btn btn-primary" ng-bind="'platform.blades.user-profile.labels.document' | translate" ng-click="openDocumentBlade()">Open</button>
+                    <div class="list-descr" ng-bind="'platform.blades.user-profile.labels.document-description' | translate"></div>
+                </div>
+                <div class="form-group">
                     <label class="form-label" ng-bind="'platform.blades.user-profile.labels.language' | translate"></label>
                     <ui-select ng-model="userProfile.language" on-select="setLanguage()">
                         <ui-select-match allow-clear="true" placeholder="{{ blade.currentLanguage }}">{{ $select.selected.name }}</ui-select-match>
