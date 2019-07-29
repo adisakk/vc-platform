@@ -55,9 +55,6 @@
       <HintPath>..\packages\valueinjecter.2.3.3\lib\net35\Omu.ValueInjecter.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Collections.Immutable, Version=1.2.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Collections.Immutable.1.4.0\lib\netstandard2.0\System.Collections.Immutable.dll</HintPath>
-    </Reference>
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
@@ -250,6 +247,10 @@
     <Compile Include="Repositories\Migrations\201903220839086_ChangeOperationLogDetailLength.Designer.cs">
       <DependentUpon>201903220839086_ChangeOperationLogDetailLength.cs</DependentUpon>
     </Compile>
+    <Compile Include="Repositories\Migrations\201907101025300_AddNotificationCcBccFields.cs" />
+    <Compile Include="Repositories\Migrations\201907101025300_AddNotificationCcBccFields.Designer.cs">
+      <DependentUpon>201907101025300_AddNotificationCcBccFields.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\Migrations\Configuration.cs" />
     <Compile Include="Repositories\PlatformDatabaseInitializer.cs" />
     <Compile Include="Repositories\PlatformRepository.cs" />
@@ -357,6 +358,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Repositories\Migrations\201903220839086_ChangeOperationLogDetailLength.resx">
       <DependentUpon>201903220839086_ChangeOperationLogDetailLength.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Repositories\Migrations\201907101025300_AddNotificationCcBccFields.resx">
+      <DependentUpon>201907101025300_AddNotificationCcBccFields.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

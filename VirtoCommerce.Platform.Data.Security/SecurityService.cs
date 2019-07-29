@@ -251,7 +251,7 @@ namespace VirtoCommerce.Platform.Data.Security
         {
             using (var userManager = _userManagerFactory())
             {
-                var dbUser = await FindByNameAsync(name, UserDetails.Reduced);
+                var dbUser = await FindByNameAsync(name, UserDetails.Full);
                 var result = ValidateUser(dbUser);
 
                 if (result.Succeeded)
@@ -278,7 +278,7 @@ namespace VirtoCommerce.Platform.Data.Security
         {
             using (var userManager = _userManagerFactory())
             {
-                var applicationUserExtended = await FindByNameAsync(name, UserDetails.Reduced);
+                var applicationUserExtended = await FindByNameAsync(name, UserDetails.Full);
                 var result = ValidateUser(applicationUserExtended);
 
                 if (!result.Succeeded)
@@ -311,7 +311,7 @@ namespace VirtoCommerce.Platform.Data.Security
         {
             using (var userManager = _userManagerFactory())
             {
-                var dbUser = await FindByIdAsync(userId, UserDetails.Reduced);
+                var dbUser = await FindByIdAsync(userId, UserDetails.Full);
                 var result = ValidateUser(dbUser);
 
                 if (result.Succeeded)
