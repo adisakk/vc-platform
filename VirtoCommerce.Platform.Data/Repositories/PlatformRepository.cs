@@ -154,6 +154,7 @@ namespace VirtoCommerce.Platform.Data.Repositories
             modelBuilder.Entity<RolePermissionEntity>("PlatformRolePermission", "Id");
             modelBuilder.Entity<PermissionScopeEntity>("PlatformPermissionScope", "Id");
             modelBuilder.Entity<RefreshTokenEntity>("RefreshToken", "Id");
+            modelBuilder.Entity<OnetimePasswordEntity>("OnetimePassword", "Id");
 
             // Relations
             modelBuilder.Entity<ApiAccountEntity>()
@@ -231,6 +232,8 @@ namespace VirtoCommerce.Platform.Data.Repositories
         public IQueryable<AssetEntryEntity> AssetEntries => GetAsQueryable<AssetEntryEntity>();
 
         public IQueryable<RefreshTokenEntity> RefreshTokens => GetAsQueryable<RefreshTokenEntity>();
+
+        public IQueryable<OnetimePasswordEntity> OnetimePasswords => GetAsQueryable<OnetimePasswordEntity>();
 
         public AssetEntryEntity[] GetAssetsByIds(IEnumerable<string> ids)
         {

@@ -41,5 +41,7 @@ namespace VirtoCommerce.Platform.Data.Repositories
 
         SettingEntity GetSettingByName(string name);
         SettingEntity[] GetAllObjectSettings(string objectType, string objectId);
+
+        IQueryable<OnetimePasswordEntity> OnetimePasswords { get; }
     }
 }

@@ -25,5 +25,8 @@ namespace VirtoCommerce.Platform.Core.Security
         Task<bool> IsUserLockedAsync(string userId);
         Task<SecurityResult> UnlockUserAsync(string userId);
         bool isAdministrator(string userName);
+
+        string GenerateOnetimePassword(string recipient);
+        bool ValidateOnetimePassword(string recipient, string password);
     }
 }

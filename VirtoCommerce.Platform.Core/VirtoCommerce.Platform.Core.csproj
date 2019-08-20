@@ -243,8 +243,10 @@
     <Compile Include="Security\IRefreshTokenService.cs" />
     <Compile Include="Security\ISupportSecurityScopes.cs" />
     <Compile Include="Security\IUserNameResolver.cs" />
+    <Compile Include="Security\OnetimePassword.cs" />
     <Compile Include="Security\PasswordValidationResult.cs" />
     <Compile Include="Security\RefreshToken.cs" />
+    <Compile Include="Security\OnetimePasswordResult.cs" />
     <Compile Include="Security\VirtoCommerceClaimTypes.cs" />
     <Compile Include="Security\IPermissionScopeService.cs" />
     <Compile Include="Security\IRoleManagementService.cs" />

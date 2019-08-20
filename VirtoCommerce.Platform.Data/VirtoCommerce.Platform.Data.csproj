@@ -108,6 +108,7 @@
     <Compile Include="Infrastructure\SetupDatabaseInitializer.cs" />
     <Compile Include="Model\AccountEntity.cs" />
     <Compile Include="Model\ApiAccountEntity.cs" />
+    <Compile Include="Model\OnetimePasswordEntity.cs" />
     <Compile Include="Model\DynamicPropertyDictionaryItemEntity.cs" />
     <Compile Include="Model\DynamicPropertyEntity.cs" />
     <Compile Include="Model\DynamicPropertyDictionaryItemNameEntity.cs" />
@@ -251,6 +252,10 @@
     <Compile Include="Repositories\Migrations\201907101025300_AddNotificationCcBccFields.Designer.cs">
       <DependentUpon>201907101025300_AddNotificationCcBccFields.cs</DependentUpon>
     </Compile>
+    <Compile Include="Repositories\Migrations\201908031800005_OnetimePassword.cs" />
+    <Compile Include="Repositories\Migrations\201908031800005_OnetimePassword.Designer.cs">
+      <DependentUpon>201908031800005_OnetimePassword.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\Migrations\Configuration.cs" />
     <Compile Include="Repositories\PlatformDatabaseInitializer.cs" />
     <Compile Include="Repositories\PlatformRepository.cs" />
@@ -361,6 +366,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Repositories\Migrations\201907101025300_AddNotificationCcBccFields.resx">
       <DependentUpon>201907101025300_AddNotificationCcBccFields.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Repositories\Migrations\201908031800005_OnetimePassword.resx">
+      <DependentUpon>201908031800005_OnetimePassword.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

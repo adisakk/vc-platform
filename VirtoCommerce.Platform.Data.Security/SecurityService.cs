@@ -534,6 +534,70 @@ namespace VirtoCommerce.Platform.Data.Security
             }
         }
 
+        public virtual bool ValidateOnetimePassword(string recipient, string password)
+        {
+            var result = false;
+
+            using (var repository = _platformRepository())
+            {
+                // Find the active OTP by recipient
+                var query = repository.OnetimePasswords;
+                query = query.Where(x => x.Recipient == recipient);
+
+                // Check expiry date
+                var expiryDate = DateTime.UtcNow.AddMinutes(-10);
+                query = query.Where(x => x.CreatedDate >= expiryDate);
+
+                // Get the latest OTP
+                var otp = query.OrderByDescending(x => x.CreatedDate).FirstOrDefault();
+
+                // Check attept and password
+                if (otp != null && otp.AttemptCount < otp.MaxAttemptCount)
+                {
+                    if (otp.Password == password)
+                    {
+                        result = true;
+                        repository.Remove(otp);
+                    } else
+                    {
+                        otp.AttemptCount += 1;
+                        repository.Update(otp);
+                    }
+                    CommitChanges(repository);
+                }
+            }
+            return result;
+        }
+
+        private readonly Random random = new Random();
+        public virtual string GenerateOnetimePassword(string recipient)
+        {
+            // Generate new OTP and save it to database
+            // TODO Move password lenght and chars to appsetting
+            var length = 6;
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789123456789";
+            var password = new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
+            var pkMap = new PrimaryKeyResolvingMap();
+
+            var otp = new OnetimePassword();
+            otp.Recipient = recipient;
+            otp.Password = password;
+            otp.AttemptCount = 0;
+            otp.MaxAttemptCount = 5; // TODO Move attempt count to appsetting
+
+            using (var repository = _platformRepository())
+            {
+                var modifiedEntity = AbstractTypeFactory<OnetimePasswordEntity>.TryCreateInstance().FromModel(otp, pkMap);
+                repository.Add(modifiedEntity);
+
+                CommitChanges(repository);
+                pkMap.ResolvePrimaryKeys();
+
+            }
+
+            return password;
+        }
+
         #endregion
 
         protected virtual ApplicationUserExtended FindByName(string userName, UserDetails detailsLevel)

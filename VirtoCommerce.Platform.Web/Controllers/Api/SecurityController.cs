@@ -619,6 +619,37 @@ namespace VirtoCommerce.Platform.Web.Controllers.Api
             return Content(result.Succeeded ? HttpStatusCode.OK : HttpStatusCode.BadRequest, result);
         }
 
+        /// <summary>
+        /// Create onetime password
+        /// </summary>
+        /// <param name="recipient">Recipient</param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("onetimepassword/new")]
+        [ResponseType(typeof(string))]
+        [AllowAnonymous]
+        public IHttpActionResult GenerateOnetimePassword(string recipient)
+        {
+            var password = _securityService.GenerateOnetimePassword(recipient);
+            return Ok(password);
+        }
+
+        /// <summary>
+        /// Validate Onetime Password
+        /// </summary>
+        /// <param name="recipient">Recipient</param>
+        /// <param name="password">Password</param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("onetimepassword/validate")]
+        [ResponseType(typeof(bool))]
+        [AllowAnonymous]
+        public IHttpActionResult ValidateOnetimePassword(string recipient, string password)
+        {
+            var result = _securityService.ValidateOnetimePassword(recipient, password);
+            return Ok(result);
+        }
+
         private void ApplyAuthorizationRulesForUser(ApplicationUserExtended user)
         {
             if (user != null && !_securityService.UserHasAnyPermission(User.Identity.Name, null, new[] { PredefinedPermissions.SecurityApiAccountsRead }))
