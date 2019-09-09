@@ -575,7 +575,8 @@ namespace VirtoCommerce.Platform.Data.Security
             // Generate new OTP and save it to database
             // TODO Move password lenght and chars to appsetting
             var length = 6;
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789123456789";
+            //Exclude I,O,1,0 to prevents typo, Double digits for equivalent random possibility
+            const string chars = "ABCDEFGHJKLMNPQRSTUVWXYZ2345678923456789";
             var password = new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
             var pkMap = new PrimaryKeyResolvingMap();
 
@@ -583,7 +584,7 @@ namespace VirtoCommerce.Platform.Data.Security
             otp.Recipient = recipient;
             otp.Password = password;
             otp.AttemptCount = 0;
-            otp.MaxAttemptCount = 5; // TODO Move attempt count to appsetting
+            otp.MaxAttemptCount = 5; // TODO Move max attempt count to appsetting
 
             using (var repository = _platformRepository())
             {

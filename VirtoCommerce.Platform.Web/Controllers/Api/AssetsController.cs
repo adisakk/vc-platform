@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -113,6 +113,7 @@ namespace VirtoCommerce.Platform.Web.Controllers.Api
             else
             {
                 var blobMultipartProvider = new BlobStorageMultipartProvider(_blobProvider, _urlResolver, folderUrl);
+                
                 await Request.Content.ReadAsMultipartAsync(blobMultipartProvider);
 
                 foreach (var blobInfo in blobMultipartProvider.BlobInfos)
