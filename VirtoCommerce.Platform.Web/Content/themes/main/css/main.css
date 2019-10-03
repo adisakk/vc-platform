@@ -1685,6 +1685,26 @@ button.btn {
   .btn.__cancel:hover {
     background-color: #a0a0a0; }
 
+.btn-normal {
+    background: #43b0e6;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    display: inline-block;
+    font-family: inherit;
+    font-size: 13px;
+    height: 30px;
+    line-height: 28px;
+    padding: 0 20px;
+    text-shadow: 1px 1px rgba(0, 0, 0, 0.1);
+    vertical-align: top;
+}
+.btn-normal:hover {
+    color: #fff;
+    opacity: .8;
+    filter: alpha(opacity=80);
+}
+
 /* Editors */
 .md-editor {
   background: #fbfdfe;
@@ -6035,5 +6055,16 @@ body .blade .blade-wrapper .blade-container .bc.blade-static .form-group {
     right: 0;
     -webkit-transform: none;
             transform: none; }
+  /* hide number spinner in input type number */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+    }
+
+    input[type=number] {
+    -moz-appearance: textfield; /* Firefox */
+    }
 
 /*# sourceMappingURL=main.css.map */

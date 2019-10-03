@@ -16,6 +16,7 @@ using VirtoCommerce.Platform.Core.Security.Events;
 using VirtoCommerce.Platform.Core.Web.Security;
 using VirtoCommerce.Platform.Data.Notifications;
 using VirtoCommerce.Platform.Data.Security.Identity;
+using VirtoCommerce.Platform.Web.Model.Notifications;
 using VirtoCommerce.Platform.Web.Model.Security;
 using VirtoCommerce.Platform.Web.Resources;
 using PlatformAuthenticationOptions = VirtoCommerce.Platform.Core.Security.AuthenticationOptions;
@@ -311,6 +312,25 @@ namespace VirtoCommerce.Platform.Web.Controllers.Api
         }
 
         /// <summary>
+        /// Check username is available
+        /// </summary>
+        /// <param name="userName"></param>
+        [HttpGet]
+        [Route("users/{userName}/available")]
+        [ResponseType(typeof(ApplicationUserExtended))]
+        //CheckPermission(Permission = PredefinedPermissions.SecurityQuery)]
+        [AllowAnonymous]
+        public async Task<IHttpActionResult> CheckUsernameAvailableByName(string userName)
+        {
+            var user = await _securityService.FindByNameAsync(userName, UserDetails.Reduced);
+            //ApplyAuthorizationRulesForUser(user);
+            var result = new SecurityResult();
+            result.Succeeded = user == null ? true : false;
+            return Ok(result);
+        }
+
+
+        /// <summary>
         /// Check specified user has passed permissions in specified scope
         /// </summary>
         /// <param name="userName">security account name</param>
@@ -342,7 +362,7 @@ namespace VirtoCommerce.Platform.Web.Controllers.Api
         }
 
         /// <summary>
-        /// Create new user
+        /// Create new user for BP registration
         /// </summary>
         /// <param name="user">User details.</param>
         [HttpPost]
@@ -360,8 +380,9 @@ namespace VirtoCommerce.Platform.Web.Controllers.Api
             var roleResponse = _roleService.SearchRoles(roleRequest);
             user.Roles = roleResponse.Roles;
             user.UserType = "BusinessPartner";
-            user.UserState = AccountState.PendingApproval;
-            
+            //user.UserState = AccountState.PendingApproval;
+            user.UserState = AccountState.Approved;
+
             var result = await _securityService.CreateAsync(user);
             return Content(result.Succeeded ? HttpStatusCode.OK : HttpStatusCode.BadRequest, result);
         }
@@ -635,6 +656,50 @@ namespace VirtoCommerce.Platform.Web.Controllers.Api
         }
 
         /// <summary>
+        /// Create onetime password and send it to phone number
+        /// </summary>
+        /// <param name="phone">phone</param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("onetimepassword/sms/send")]
+        [ResponseType(typeof(string))]
+        [AllowAnonymous]
+        public IHttpActionResult SendSmsOnetimepassword(string phone)
+        {
+            var retVal = new SecurityResult
+            {
+                // Return success by default for security reason
+                Succeeded = true
+            };
+            
+            try
+            {
+                var token = _securityService.GenerateOnetimePassword(phone);
+                var notification = _notificationManager.GetNewNotification<TwoFactorSmsNotification>("Platform", typeof(TwoFactorSmsNotification).Name, "en-US");
+                notification.Recipient = "+66"+phone;
+                notification.Token = token;
+
+                try
+                {
+                    _notificationManager.ScheduleSendNotification(notification);
+                }
+                catch (Exception ex)
+                {
+                    // Display errors only when sending notifications fails
+                    retVal.Errors = new[] { ex.Message };
+                    retVal.Succeeded = false;
+                }
+            }
+            catch
+            {
+                // No details for security reasons
+            }
+
+            return Ok(retVal);
+        }
+
+
+        /// <summary>
         /// Validate Onetime Password
         /// </summary>
         /// <param name="recipient">Recipient</param>
@@ -648,6 +713,23 @@ namespace VirtoCommerce.Platform.Web.Controllers.Api
         {
             var result = _securityService.ValidateOnetimePassword(recipient, password);
             return Ok(result);
+        }
+
+        /// <summary>
+        /// Validate Onetime Password for SMS, Also wrap returned value with object for JSON body
+        /// </summary>
+        /// <param name="phone">Recipient</param>
+        /// <param name="otp">Password</param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("onetimepassword/sms/validate")]
+        [ResponseType(typeof(SecurityResult))]
+        [AllowAnonymous]
+        public IHttpActionResult ValidateSmsOnetimePassword(string phone, string otp)
+        {
+            var retVal = new SecurityResult();
+            retVal.Succeeded = _securityService.ValidateOnetimePassword(phone, otp);
+            return Ok(retVal);
         }
 
         private void ApplyAuthorizationRulesForUser(ApplicationUserExtended user)

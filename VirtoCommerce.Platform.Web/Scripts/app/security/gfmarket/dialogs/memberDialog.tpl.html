@@ -1,0 +1,134 @@
+<div class="window">
+    <div class="window-status" ng-if="memberProgress">
+        <div class="progress-bar"></div>
+    </div>
+    <header class="window-head">
+        <img class="__logo" ng-src="{{uiCustomization.contrast_logo || 'Content/themes/main/images/contrast-logo.png'}}" />
+        <span class="window-t">{{ 'platform.blades.register.labels.bp-member-profile' | translate: (uiCustomization.title ? uiCustomization : { title: 'Virto Commerce' }) }}</span>
+    </header>
+    <div class="window-cnt">
+        <form class="form" ng-submit="member()" name="memberForm">
+            <div class="form-group">
+                <label class="form-label">{{ 'platform.blades.register.labels.email' | translate }}</label>
+                <div class="form-input">
+                    <input name="email" type="email" ng-model="user.email" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">{{ 'platform.blades.register.labels.title' | translate }}</label>
+                <div class="form-input">
+                    <ui-select ng-model="user.title">
+                        <ui-select-match placeholder="{{ 'platform.blades.register.labels.placeholders.title' | translate }}">{{$select.selected}}</ui-select-match>
+                        <ui-select-choices repeat="x as x in titles | filter: $select.search ">
+                            <span ng-bind-html="x | highlight: $select.search"></span>
+                        </ui-select-choices>
+                    </ui-select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">{{ 'platform.blades.register.labels.firstname' | translate }}</label>
+                <div class="form-input">
+                    <input name="name" type="text" ng-model="user.firstname" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">{{ 'platform.blades.register.labels.lastname' | translate }}</label>
+                <div class="form-input">
+                    <input name="lastname" type="text" ng-model="user.lastname" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">{{ 'platform.blades.register.labels.birthday' | translate }}</label>
+                <div class="form-input">
+                    <div class="column">
+                        <ui-select ng-model="user.birth_day" required>
+                            <ui-select-match placeholder="{{ 'platform.blades.register.labels.placeholders.select_day' | translate }}">{{$select.selected}}</ui-select-match>
+                            <ui-select-choices repeat="x as x in days | filter: $select.search ">
+                                <span ng-bind-html="x | highlight: $select.search"></span>
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>
+                    <div class="column">
+                        <ui-select ng-model="user.birth_month" required>
+                            <ui-select-match placeholder="{{ 'platform.blades.register.labels.placeholders.select_month' | translate }}">{{$select.selected}}</ui-select-match>
+                            <ui-select-choices repeat="x as x in months | filter: $select.search ">
+                                <span ng-bind-html="x | highlight: $select.search"></span>
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>
+                    <div class="column">
+                        <ui-select ng-model="user.birth_year" required>
+                            <ui-select-match placeholder="{{ 'platform.blades.register.labels.placeholders.select_year' | translate }}">{{$select.selected}}</ui-select-match>
+                            <ui-select-choices repeat="x as x in years | filter: $select.search ">
+                                <span ng-bind-html="x | highlight: $select.search"></span>
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">{{ 'platform.blades.register.labels.idcard_number' | translate }}</label>
+                <div class="form-input">
+                    <input name="idcardnumber" type="text" ng-model="user.idcardnumber" pattern="[0-9]{13}" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">{{ 'platform.blades.register.labels.idcard_expiry_date' | translate }}</label>
+                <div class="form-input">
+                    <div class="column">
+                        <ui-select ng-model="user.idcard_expiry_day" required>
+                            <ui-select-match placeholder="{{ 'platform.blades.register.labels.placeholders.select_day' | translate }}">{{$select.selected}}</ui-select-match>
+                            <ui-select-choices repeat="x as x in days | filter: $select.search ">
+                                <span ng-bind-html="x | highlight: $select.search"></span>
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>
+                    <div class="column">
+                        <ui-select ng-model="user.idcard_expiry_month" required>
+                            <ui-select-match placeholder="{{ 'platform.blades.register.labels.placeholders.select_month' | translate }}">{{$select.selected}}</ui-select-match>
+                            <ui-select-choices repeat="x as x in months | filter: $select.search ">
+                                <span ng-bind-html="x | highlight: $select.search"></span>
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>
+                    <div class="column">
+                        <ui-select ng-model="user.idcard_expiry_year" required>
+                            <ui-select-match placeholder="{{ 'platform.blades.register.labels.placeholders.select_year' | translate }}">{{$select.selected}}</ui-select-match>
+                            <ui-select-choices repeat="x as x in years | filter: $select.search ">
+                                <span ng-bind-html="x | highlight: $select.search"></span>
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="form-error" ng-if="regisError" style="align-content:center">
+                    {{regisError}}
+                </div>
+            </div>
+
+            <div class="clearfix">
+                <div class="column">
+                    <div class="form-group">
+                        <button ui-sref="verifyDialog" class="btn __cancel" ng-disabled="isLoading">
+                            <span>{{ 'platform.blades.register.labels.back' | translate }}</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="form-group __right">
+                        <button class="btn" type="submit" ng-disabled="memberForm.$invalid||memberProgress">
+                            <span>{{ 'platform.blades.register.labels.submit' | translate }}</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

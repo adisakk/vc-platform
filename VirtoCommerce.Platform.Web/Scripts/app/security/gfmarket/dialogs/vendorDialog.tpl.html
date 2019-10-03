@@ -1,0 +1,124 @@
+<div class="window">
+    <div class="window-status" ng-if="vendorProgress">
+        <div class="progress-bar"></div>
+    </div>
+    <header class="window-head">
+        <img class="__logo" ng-src="{{uiCustomization.contrast_logo || 'Content/themes/main/images/contrast-logo.png'}}" />
+        <span class="window-t">{{ 'platform.blades.register.labels.bp-vendor-information' | translate: (uiCustomization.title ? uiCustomization : { title: 'Virto Commerce' }) }}</span>
+    </header>
+    <div class="window-cnt" style="height:100%;">
+        <form class="form" ng-submit="vendor()" name="vendorForm">
+            <div class="form-group">
+                <label class="form-label">{{ 'platform.blades.register.labels.vendor-name' | translate }}</label>
+                <div class="form-input">
+                    <input type="text" name="vendorName" ng-model="user.vendorName" required autofocus>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">{{ 'platform.blades.register.labels.company-name' | translate }}</label>
+                <div class="form-input">
+                    <input type="text" name="companyName" ng-model="user.companyName" autofocus>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">{{ 'platform.blades.register.labels.company-registration-number' | translate }}</label>
+                <div class="form-input">
+                    <input type="text" name="registrationNumber" ng-model="user.registrationNumber" pattern="[0-9]{13}" autofocus>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="form-input">
+                    <label class="form-label">{{ 'platform.blades.register.labels.company-registration-date' | translate }}</label>
+                    <div class="form-input">
+                        <div class="column">
+                            <ui-select ng-model="user.registration_day">
+                                <ui-select-match placeholder="{{ 'platform.blades.register.labels.placeholders.select_day' | translate }}">{{$select.selected}}</ui-select-match>
+                                <ui-select-choices repeat="x as x in days | filter: $select.search ">
+                                    <span ng-bind-html="x | highlight: $select.search"></span>
+                                </ui-select-choices>
+                            </ui-select>
+                        </div>
+                        <div class="column">
+                            <ui-select ng-model="user.registration_month">
+                                <ui-select-match placeholder="{{ 'platform.blades.register.labels.placeholders.select_month' | translate }}">{{$select.selected}}</ui-select-match>
+                                <ui-select-choices repeat="x as x in months | filter: $select.search ">
+                                    <span ng-bind-html="x | highlight: $select.search"></span>
+                                </ui-select-choices>
+                            </ui-select>
+                        </div>
+                        <div class="column">
+                            <ui-select ng-model="user.registration_year">
+                                <ui-select-match placeholder="{{ 'platform.blades.register.labels.placeholders.select_year' | translate }}">{{$select.selected}}</ui-select-match>
+                                <ui-select-choices repeat="x as x in years | filter: $select.search ">
+                                    <span ng-bind-html="x | highlight: $select.search"></span>
+                                </ui-select-choices>
+                            </ui-select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="form-input">
+                    <label class="form-label">{{ 'platform.blades.register.labels.address' | translate }}</label>
+                    <div class="form-input">
+                        <input name="address" type="text" ng-model="user.address" required>
+                        <input name="address2" type="text" ng-model="user.address2">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="form-input">
+                    <div class="column">
+                        <label class="form-label">{{ 'platform.blades.register.labels.city' | translate }}</label>
+                        <div class="form-input">
+                            <input name="city" type="text" ng-model="user.city" required>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <label class="form-label">{{ 'platform.blades.register.labels.postal-code' | translate }}</label>
+                        <div class="form-input">
+                            <input name="postalCode" type="number" ng-model="user.postalCode" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--
+            <div class="form-group">
+                <label class="form-label">{{ 'platform.blades.register.labels.business-email' | translate }}</label>
+                <div class="form-input">
+                    <input name="businessEmail" type="email" ng-model="user.businessEmail" required>
+                </div>
+            </div>
+            -->
+
+            <div class="form-group">
+                <div class="form-error" ng-if="regisError" style="align-content:center">
+                    {{regisError}}
+                </div>
+            </div>
+
+            <div class="clearfix">
+                <div class="column">
+                    <div class="form-group">
+                        <button ui-sref="memberDialog" class="btn __cancel" ng-disabled="isLoading">
+                            <span>{{ 'platform.blades.register.labels.back' | translate }}</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="form-group __right">
+                        <button class="btn" type="submit" ng-disabled="vendorForm.$invalid||vendorProgress">
+                            <span>{{ 'platform.blades.register.labels.submit' | translate }}</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

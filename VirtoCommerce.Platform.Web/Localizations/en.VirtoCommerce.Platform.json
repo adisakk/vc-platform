@@ -541,20 +541,58 @@
           "log-in": "Log in"
         }
       },
+      "welcome": {
+        "labels": {
+          "gfmarket-management-system": "E-Market Giving Forward Management System",
+          "create-bp-account": "Create partner account",
+          "login-to-system": "Management system"
+        }
+      },
       "register": {
         "labels": {
-          "register-bp-account": "Register an account",
-          "register-bp-account-link": "Register an account.",
+          "register-bp-account": "Create business partner account",
+          "register-bp-account-link": "Create an account.",
+          "bp-verify-phone-number": "Create business partner account - Verify phone number",
+          "bp-member-profile": "Create business partner account - Member profile",
+          "bp-vendor-information": "Create business partner account - Vendor information",
+          "phone-number": "Phone number",
+          "phone-number-already-taken": "This phone number is already taken",
+          "send-otp": "Send OTP",
+          "enter-otp": "Enter OTP",
+          "validate-otp": "Validate",
+          "invalid-otp": "The OTP is invalid.",
           "username": "Username",
           "email": "Email",
           "password": "Password",
           "repeat-password": "Repeat password",
+          "password-strength-suggestions": "(Must have at least 8 characters.)",
+          "password-not-matched": "Password and confirmation password do not match.",
+          "register": "Register",
           "title": "Title",
           "firstname": "Firstname",
           "lastname": "Lastname",
+          "vendor-name": "Vendor name",
+          "company-name": "Company name",
+          "company-registration-number": "Registration number",
+          "company-registration-date": "Registration date",
+          "address": "Address",
+          "city": "City",
+          "postal-code": "Postal code",
+          "business-email": "Business email",
           "submit": "Submit",
+          "ok": "OK",
           "back": "Back",
-          "success": "Registration successful."
+          "success": "Registration successful.",
+          "please_login_to_upload_documents": "Please login and upload documents for the approval process.",
+          "birthday": "Birthday",
+          "idcard_number": "Id card number",
+          "idcard_expiry_date": "Id card expiry date",
+          "placeholders": {
+            "title": "Select title",
+            "select_day": "Select day",
+            "select_month": "Select month",
+            "select_year": "Select year"
+          }
         }
       },
       "forgotpassword": {

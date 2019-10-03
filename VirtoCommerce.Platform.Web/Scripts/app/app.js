@@ -330,7 +330,11 @@ angular.module('platformWebApp', AppDependencies).
 
             $rootScope.$on('unauthorized', function (event, rejection) {
                 if (!authService.isAuthenticated) {
-                    $state.go('loginDialog');
+                    if ($state.current.name === 'loginDialog') {
+                        $state.go('loginDialog');
+                    } else {
+                        $state.go('welcomeDialog'); //gfmarket
+                    }
                 }
             });
 
@@ -355,7 +359,11 @@ angular.module('platformWebApp', AppDependencies).
                             $state.go('workspace');
                         }
                     } else {
-                        $state.go('loginDialog');
+                        if ($state.current.name === 'loginDialog') {
+                            $state.go('loginDialog');
+                        } else {
+                            $state.go('welcomeDialog'); //gfmarket
+                        }
                     }
                 }, 500);
             });
@@ -445,4 +453,24 @@ angular.module('platformWebApp', AppDependencies).
                 var template = angular.element(response);
                 $compile(template);
             });
+
+            $rootScope.openLoginDialog = function () {
+                $state.go('loginDialog');
+            };
+
+            $rootScope.openVerifyDialog = function () {
+                $state.go('verifyDialog');
+            };
+
+            $rootScope.openMemberDialog = function () {
+                $state.go('memberDialog');
+            };
+
+            $rootScope.openVendorDialog = function () {
+                $state.go('vendorDialog');
+            };
+
+            $rootScope.openSucceededDialog = function () {
+                $state.go('succeededDialog');
+            };
         }]);

@@ -406,10 +406,16 @@
     <Content Include="Scripts\app\pushNotifications\menuHeader.tpl.html" />
     <Content Include="Scripts\app\security\dialogs\changeApiSecretKeyDialog.tpl.html" />
     <Content Include="Scripts\app\security\dialogs\changePasswordDialog.tpl.html" />
+    <Content Include="Scripts\app\security\gfmarket\dialogs\loginDialog.tpl.html" />
+    <Content Include="Scripts\app\security\gfmarket\dialogs\succeededDialog.tpl.html" />
+    <Content Include="Scripts\app\security\gfmarket\dialogs\vendorDialog.tpl.html" />
+    <Content Include="Scripts\app\security\gfmarket\dialogs\memberDialog.tpl.html" />
+    <Content Include="Scripts\app\security\gfmarket\dialogs\verifyDialog.tpl.html" />
     <Content Include="Scripts\app\security\dialogs\resetPasswordDialog.tpl.html" />
     <Content Include="Scripts\app\security\dialogs\forgotPasswordDialog.tpl.html" />
     <Content Include="Scripts\app\security\directives\password-input.js" />
     <Content Include="Scripts\app\security\directives\password-input.tpl.html" />
+    <Content Include="Scripts\app\security\gfmarket\welcome.tpl.html" />
     <Content Include="Scripts\app\security\register\register.tpl.html" />
     <Content Include="Scripts\app\security\services\authDataStorage.js" />
     <Content Include="Scripts\app\security\services\externalSignInService.js" />

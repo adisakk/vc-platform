@@ -1,10 +1,10 @@
 angular.module('platformWebApp')
     .config(['$stateProvider', '$httpProvider', function ($stateProvider, $httpProvider) {
 
-        $stateProvider.state('loginDialog',
+        $stateProvider.state('welcomeDialog',
             {
-                url: '/login',
-                templateUrl: '$(Platform)/Scripts/app/security/login/login.tpl.html',
+                url: '/welcome',
+                templateUrl: '$(Platform)/Scripts/app/security/gfmarket/welcome.tpl.html',
                 controller: [
                     '$scope', 'platformWebApp.authService', 'platformWebApp.externalSignInService', function ($scope, authService, externalSignInService) {
                         externalSignInService.getProviders().then(
@@ -41,48 +41,388 @@ angular.module('platformWebApp')
                                     }
                                 });
                         };
-
                     }
                 ]
             });
 
-        $stateProvider.state('registerDialog',
+        $stateProvider.state('loginDialog',
             {
-                url: '/register',
-                templateUrl: '$(Platform)/Scripts/app/security/register/register.tpl.html',
+                url: '/login',
+                templateUrl: '$(Platform)/Scripts/app/security/gfmarket/dialogs/loginDialog.tpl.html',
                 controller: [
-                    '$scope', 'platformWebApp.accounts', function ($scope, accounts) {
+                    '$scope', 'platformWebApp.authService', 'platformWebApp.externalSignInService', function ($scope, authService, externalSignInService) {
+                        externalSignInService.getProviders().then(
+                            function (response) {
+                                $scope.externalLoginProviders = response.data;
+                            });
 
                         $scope.user = {};
-                        $scope.regisError = null;
-                        $scope.regisProgress = false;
-                        $scope.regisSuccess = false;
-
-                        $scope.register = function () {
-
+                        $scope.authError = null;
+                        $scope.authReason = false;
+                        $scope.loginProgress = false;
+                        $scope.ok = function () {
                             // Clear any previous security errors
-                            $scope.regisError = null;
-                            $scope.regisProgress = true;
-                            $scope.regisSuccess = false;
-
-                            // Try to register
-                            if ($scope.user.password != $scope.user.newPassword2) {
-                                $scope.regisError = 'Error: passwords don\'t match!';
-                                return;
-                            }
-
-                            $scope.regisError = undefined;
-                            var postData = angular.copy($scope.user);
-                            postData.newPassword2 = undefined;
-
-                            accounts.register(postData, function () {
-                                $scope.regisSuccess = true;
-                            },
-
-                            function (response) {
-                                $scope.regisError = 'Registration error! - ' + response.data.errors[0];
-                            });
+                            $scope.authError = null;
+                            $scope.loginProgress = true;
+                            // Try to login
+                            authService.login($scope.user.email, $scope.user.password, $scope.user.remember).then(
+                                function (loggedIn) {
+                                    $scope.loginProgress = false;
+                                    if (!loggedIn) {
+                                        $scope.authError = 'invalidCredentials';
+                                    }
+                                },
+                                function (x) {
+                                    $scope.loginProgress = false;
+                                    if (angular.isDefined(x.status)) {
+                                        if (x.status == 401) {
+                                            $scope.authError = 'The login or password is incorrect.';
+                                        } else {
+                                            $scope.authError = 'Authentication error (code: ' + x.status + ').';
+                                        }
+                                    } else {
+                                        $scope.authError = 'Authentication error ' + x;
+                                    }
+                                });
                         };
+                    }
+                ]
+            });
+
+        $stateProvider.state('verifyDialog',
+            {
+                url: '/verify',
+                templateUrl: '$(Platform)/Scripts/app/security/gfmarket/dialogs/verifyDialog.tpl.html',
+                controller: [
+                    '$rootScope', '$scope', 'platformWebApp.accounts', function ($rootScope, $scope, accounts) {
+
+                        $scope.user = {};
+                        $scope.otpSent = false;
+                        $scope.isCountingDown = false;
+                        $scope.otpCountdownObj = null;
+                        $scope.errorInvalidOtp = false;
+                        $scope.verifyOtpSuccess = false;
+                        $scope.errorPasswordNotMatched = false;
+                        $scope.verifyProgress = false;
+                        $scope.verifyPasswordSuccess = false;
+                        $scope.isUsernameAlreadyTaken = false;
+
+                        $scope.setOtpCountdown = function () {
+                            $scope.isCountingDown = true;
+                            // Set the date we're counting down to
+                            var countDownDate = new Date().getTime() + 180000; // 3 minutes
+
+                            // Update the count down every 1 second
+                            $scope.otpCountdownObj = setInterval(function () {
+                                
+                                // Get today's date and time
+                                var now = new Date().getTime();
+
+                                // Find the distance between now and the count down date
+                                var distance = countDownDate - now;
+
+                                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                                var display = document.getElementById("otpCountdown");
+                                if (display != undefined) {
+                                    display.innerHTML = minutes + "m " + seconds + "s ";
+                                } else {
+                                    clearInterval($scope.otpCountdownObj);
+                                }
+                                
+                                // If the count down is over, write some text 
+                                if (distance < 0) {
+                                    clearInterval($scope.otpCountdownObj);
+                                    $scope.isCountingDown = false;
+                                }
+                            }, 1000);
+                        }
+
+                        $scope.sendOtp = function () {
+                            $scope.isUsernameAlreadyTaken = false;
+                            $scope.verifyProgress = true;
+                            $scope.errorInvalidOtp = false;
+                            accounts.checkUsernameAvailable({ userName: $scope.user.phone }).$promise.then(
+                                function (checkResult) {
+                                    console.log(checkResult);
+                                    if (checkResult.succeeded) {
+                                        accounts.sendSmsOnetimepassword({ phone: $scope.user.phone });
+                                        $scope.otpSent = true;
+                                        $scope.setOtpCountdown();
+                                    } else {
+                                        $scope.otpSent = false;
+                                        $scope.isUsernameAlreadyTaken = true;
+                                    }
+                                    $scope.verifyProgress = false;
+                                },
+                                function (checkError) {
+                                    $scope.verifyProgress = false;
+                                    console.log(checkError);
+                                }
+                            );
+                        };
+
+                        $scope.verify = function () {
+                            $scope.verifyProgress = true;
+                            //validate OTP
+                            accounts.validateSmsOnetimePassword({ phone: $scope.user.phone, otp: $scope.user.otp.trim() })
+                                .$promise.then(
+                                    function (response) {
+                                        console.log(response);
+                                        if (!response.succeeded) {
+                                            $scope.verifyOtpSuccess = true;
+                                        } else {
+                                            $scope.errorInvalidOtp = true;
+                                        }
+
+                                        //check pasword is matched
+                                        if ($scope.user.password == $scope.user.newPassword2) {
+                                            $scope.verifyPasswordSuccess = true;
+
+                                        } else {
+                                            $scope.errorPasswordNotMatched = true;
+                                        }
+
+                                        $scope.verifyProgress = false;
+                                        if ($scope.verifyOtpSuccess && $scope.verifyPasswordSuccess) {
+                                            clearInterval($scope.otpCountdownObj);
+                                            $rootScope.user = $scope.user;
+                                            //go to member dialog
+                                            $rootScope.openMemberDialog();
+                                        }
+                                },
+
+                                function (response) {
+                                    console.log("Unable to perform get request");
+                                    console.log(response);
+                                }
+                            );
+                        };
+                    }
+                ]
+            });
+
+        $stateProvider.state('memberDialog',
+            {
+                url: '/member',
+                templateUrl: '$(Platform)/Scripts/app/security/gfmarket/dialogs/memberDialog.tpl.html',
+                controller: [
+                    '$rootScope', '$scope', 'platformWebApp.accounts', function ($rootScope, $scope, accounts) {
+
+                        $scope.user = $rootScope.user;
+                        propulateDateDropdownOptions($scope);
+                        console.log($scope.user);
+
+                        $scope.memberProgress = false;
+
+                        $scope.titles = ['Mr.', 'Ms.', 'Mrs', 'Miss'];
+
+                        $scope.member = function () {
+                            $scope.memberProgress = true;
+                            $rootScope.user = $scope.user;
+                            $rootScope.openVendorDialog();
+                        }
+                    }
+                ]
+            });
+
+        $stateProvider.state('vendorDialog',
+            {
+                url: '/vendor',
+                templateUrl: '$(Platform)/Scripts/app/security/gfmarket/dialogs/vendorDialog.tpl.html',
+                controller: [
+                    '$rootScope', '$scope', 'platformWebApp.accounts', function ($rootScope, $scope, accounts) {
+
+                        $scope.user = $rootScope.user;
+                        propulateDateDropdownOptions($scope);
+                        console.log($scope.user);
+
+                        $scope.vendorProgress = false;
+                        
+                        $scope.vendor = function () {
+                            $scope.vendorProgress = true;
+                            $scope.user;
+
+                            console.log($scope.user);
+
+                            // Create member profile
+                            var objectType = 'VirtoCommerce.Domain.Customer.Model.Contact';
+                            var member = {};
+                            member.firstName = $scope.user.firstname;
+                            member.lastName = $scope.user.lastname;
+                            member.fullName = $scope.user.firstname +' '+ $scope.user.lastname;
+                            member.emails = [$scope.user.email];
+                            member.memberType = 'Contact';
+
+                            var address = {};
+                            //address.email = $scope.user.businessEmail;
+                            address.line1 = $scope.user.address;
+                            address.line2 = $scope.user.address2;
+                            address.city = $scope.user.city;
+                            address.countryCode = 'THA';
+                            address.countryName = 'Thailand';
+                            address.postalCode = $scope.user.postalCode;
+                            address.addressType = 3; //BillingAndShipping
+                            member.addresses = [address];
+                            member.createdBy = 'GF.BP.Registrant';
+                            member.dynamicProperties = [];
+                            
+                            // Set birthdate into dynamic properties
+                            var birthdate = {};
+                            birthdate.id = 'd9c5d9cf82a44b2ea80363b77f5de4c8';
+                            birthdate.name = 'Birthday';
+                            var bdValue = $scope.user.birth_day + '/' + $scope.user.birth_month + '/' + $scope.user.birth_year;
+                            setDynamicValue(bdValue, 'ShortText', objectType, birthdate, member);
+
+                            // Set title into dynamic properties
+                            var title = {};
+                            title.id = 'abbd526fff39409cb9a8b76f08029dca';
+                            title.name = 'Title';
+                            setDynamicValue($scope.user.title, 'ShortText', objectType, title, member);
+
+                            // Set id number into dynamic properties
+                            var idnumber = {};
+                            idnumber.id = '0eb27082906b42009476abc7c9309920';
+                            idnumber.name = 'IdNumber';
+                            setDynamicValue($scope.user.idcardnumber+'', 'ShortText', objectType, idnumber, member);
+
+                            // Set id card expiry date into dynamic properties
+                            var idcardexpiry = {};
+                            idcardexpiry.id = 'd87b2e3623434f7aa7e277fdfe84030e';
+                            idcardexpiry.name = 'IdCardExpiryDate';
+                            var expiryDate = $scope.user.idcard_expiry_day + '/' + $scope.user.idcard_expiry_month + '/' + $scope.user.idcard_expiry_year;
+                            setDynamicValue(expiryDate, 'ShortText', objectType, idcardexpiry, member);
+
+                            // Set vendor name into dynamic properties
+                            var vendorName = {};
+                            vendorName.id = '24e13d3243c6446ab1196b0137bee70b';
+                            vendorName.name = 'VendorName';
+                            setDynamicValue($scope.user.vendorName, 'ShortText', objectType, vendorName, member);
+
+                            // Set company name into dynamic properties
+                            var companyName = {};
+                            companyName.id = 'fdfed84db75b4b1e803cabf4ebe8fd68';
+                            companyName.name = 'CompanyName';
+                            setDynamicValue($scope.user.companyName, 'ShortText', objectType, companyName, member);
+
+                            // Set company registration number into dynamic properties
+                            var registrationNumber = {};
+                            registrationNumber.id = '03b4256b32f241cea271b014fd10a555';
+                            registrationNumber.name = 'CompanyRegistrationNumber';
+                            var regDate = $scope.user.registration_day + '/' + $scope.user.registration_month + '/' + $scope.user.registration_year;
+                            setDynamicValue($scope.user.registrationNumber+'', 'ShortText', objectType, registrationNumber, member);
+
+
+                            // Set company registration date into dynamic properties
+                            var registrationDate = {};
+                            registrationDate.id = '946cba9e685747399f425efcf73b50f1';
+                            registrationDate.name = 'CompanyRegistrationDate';
+                            var regDate = $scope.user.registration_day + '/' + $scope.user.registration_month + '/' + $scope.user.registration_year;
+                            setDynamicValue(regDate, 'ShortText', objectType, registrationDate, member);
+
+                            // Set company registration date into dynamic properties
+                            var isBusinessPartner = {};
+                            isBusinessPartner.id = '6934a048eaa14133a511f8c53dc4d956';
+                            isBusinessPartner.name = 'CompanyRegistrationDate';
+                            setDynamicValue(true, 'Boolean', objectType, isBusinessPartner, member);
+
+                            console.log(member);
+                            accounts.createMemberContact(member).$promise.then(
+                                function (memberResult) {
+                                    console.log(memberResult);
+
+                                    // Create user login
+                                    var user = {};
+                                    user.memberId = memberResult.id;
+                                    user.userName = $scope.user.phone;
+                                    user.phoneNumber = $scope.user.phone;
+                                    user.phoneNumberConfirmed = true;
+                                    //user.storeId
+                                    user.password = $scope.user.password;
+                                    accounts.register(user).$promise.then(
+
+                                        function (userResult) {
+                                            console.log(userResult);
+                                            $rootScope.openSucceededDialog();
+                                        },
+
+                                        function (userError) {
+                                            console.log(userError);
+                                            $scope.vendorProgress = false;
+                                            $scope.regisError = userError.data.errors[0];
+                                        }
+                                    );
+                                },
+
+                                function (memberError) {
+                                    console.log(memberError);
+                                    $scope.vendorProgress = false;
+                                }
+                            );
+                            
+                        }
+                    }
+                ]
+            });
+
+        function setDynamicValue(value, valueType, objectType, property, member) {
+            property.objectType = objectType;
+            property.valueType = valueType;
+            var valueObj = {};
+            valueObj.objectType = objectType;
+            valueObj.valueType = valueType;
+            valueObj.value = value;
+            property.values = [valueObj];
+            member.dynamicProperties.push(property);
+        }
+
+        function propulateDateDropdownOptions($scope) {
+            // Populate dropdown options: days, months, years
+            if ($scope.days == undefined) {
+                $scope.days = [];
+                for (i = 1; i <= 31; i++) {
+                    var day = '0' + i;
+                    if ($scope.days.length >= 9) {
+                        day = '' + i;
+                    }
+                    $scope.days.push(day);
+                }
+            }
+
+            if ($scope.months == undefined) {
+                $scope.months = [];
+                for (i = 1; i <= 12; i++) {
+                    var month = '0' + i;
+                    if ($scope.months.length >= 9) {
+                        month = '' + i;
+                    }
+                    $scope.months.push(month);
+                }
+            }
+
+            if ($scope.years == undefined) {
+                $scope.years = [];
+                var d = new Date();
+                var n = d.getFullYear() + 543;
+                if (n > 2500) {
+                    n -= 543;
+                }
+                n -= 100; // age range 1-99 years
+                for (i = 0; i < 100; i++) {
+                    var year = '' + (n + i);
+                    $scope.years.push(year);
+                }
+            }
+        }
+
+        $stateProvider.state('succeededDialog',
+            {
+                url: '/succeeded',
+                templateUrl: '$(Platform)/Scripts/app/security/gfmarket/dialogs/succeededDialog.tpl.html',
+                controller: [
+                    '$rootScope', '$scope', function ($rootScope, $scope) {
+                        
                     }
                 ]
             });

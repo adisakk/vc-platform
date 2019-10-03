@@ -12,6 +12,10 @@ angular.module('platformWebApp')
         update: { method: 'PUT' },
         locked: { url: 'api/platform/security/users/:id/locked', method: 'GET' },
         unlock: { url: 'api/platform/security/users/:id/unlock', method: 'POST' },
-        register: { url: 'api/platform/security/users/register', method: 'POST' }
+        register: { url: 'api/platform/security/users/register', method: 'POST' },
+        createMemberContact: { url: 'api/members/businesspartner', method: 'POST' },
+        sendSmsOnetimepassword: { url: 'api/platform/security/onetimepassword/sms/send', method: 'GET' },
+        validateSmsOnetimePassword: { url: 'api/platform/security/onetimepassword/sms/validate', method: 'GET' },
+        checkUsernameAvailable: { url: 'api/platform/security/users/:userName/available', method: 'GET' }
     });
 }]);
