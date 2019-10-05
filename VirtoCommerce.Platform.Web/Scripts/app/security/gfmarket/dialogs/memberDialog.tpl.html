@@ -73,7 +73,7 @@
             <div class="form-group">
                 <label class="form-label">{{ 'platform.blades.register.labels.idcard_number' | translate }}</label>
                 <div class="form-input">
-                    <input name="idcardnumber" type="text" ng-model="user.idcardnumber" pattern="[0-9]{13}" required>
+                    <input name="idcardnumber" type="text" ng-model="user.idcardnumber" pattern="[0-9]{13}" maxlength="13" required>
                 </div>
             </div>
 
@@ -81,7 +81,7 @@
                 <label class="form-label">{{ 'platform.blades.register.labels.idcard_expiry_date' | translate }}</label>
                 <div class="form-input">
                     <div class="column">
-                        <ui-select ng-model="user.idcard_expiry_day" required>
+                        <ui-select ng-model="user.idcard_expiry_day" search-enabled="false" required>
                             <ui-select-match placeholder="{{ 'platform.blades.register.labels.placeholders.select_day' | translate }}">{{$select.selected}}</ui-select-match>
                             <ui-select-choices repeat="x as x in days | filter: $select.search ">
                                 <span ng-bind-html="x | highlight: $select.search"></span>
@@ -89,7 +89,7 @@
                         </ui-select>
                     </div>
                     <div class="column">
-                        <ui-select ng-model="user.idcard_expiry_month" required>
+                        <ui-select ng-model="user.idcard_expiry_month" search-enabled="false" required>
                             <ui-select-match placeholder="{{ 'platform.blades.register.labels.placeholders.select_month' | translate }}">{{$select.selected}}</ui-select-match>
                             <ui-select-choices repeat="x as x in months | filter: $select.search ">
                                 <span ng-bind-html="x | highlight: $select.search"></span>
@@ -97,7 +97,7 @@
                         </ui-select>
                     </div>
                     <div class="column">
-                        <ui-select ng-model="user.idcard_expiry_year" required>
+                        <ui-select ng-model="user.idcard_expiry_year" search-enabled="false" required>
                             <ui-select-match placeholder="{{ 'platform.blades.register.labels.placeholders.select_year' | translate }}">{{$select.selected}}</ui-select-match>
                             <ui-select-choices repeat="x as x in years | filter: $select.search ">
                                 <span ng-bind-html="x | highlight: $select.search"></span>

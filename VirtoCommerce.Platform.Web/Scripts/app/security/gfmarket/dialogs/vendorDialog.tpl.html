@@ -25,7 +25,7 @@
             <div class="form-group">
                 <label class="form-label">{{ 'platform.blades.register.labels.company-registration-number' | translate }}</label>
                 <div class="form-input">
-                    <input type="text" name="registrationNumber" ng-model="user.registrationNumber" pattern="[0-9]{13}" autofocus>
+                    <input type="text" name="registrationNumber" ng-model="user.registrationNumber" pattern="[0-9]{13}" maxlength="13" autofocus>
                 </div>
             </div>
 
@@ -66,7 +66,7 @@
                     <label class="form-label">{{ 'platform.blades.register.labels.address' | translate }}</label>
                     <div class="form-input">
                         <input name="address" type="text" ng-model="user.address" required>
-                        <input name="address2" type="text" ng-model="user.address2">
+                        <input name="address2" type="hidden" ng-model="user.address2">
                     </div>
                 </div>
             </div>

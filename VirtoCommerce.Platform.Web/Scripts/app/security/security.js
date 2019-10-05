@@ -125,7 +125,7 @@ angular.module('platformWebApp')
                                 var seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
                                 var display = document.getElementById("otpCountdown");
-                                if (display != undefined) {
+                                if (display != undefined && (minutes != -1 || seconds != -1)) {
                                     display.innerHTML = minutes + "m " + seconds + "s ";
                                 } else {
                                     clearInterval($scope.otpCountdownObj);
@@ -170,9 +170,11 @@ angular.module('platformWebApp')
                                 .$promise.then(
                                     function (response) {
                                         console.log(response);
-                                        if (!response.succeeded) {
+                                        if (response.succeeded) {
                                             $scope.verifyOtpSuccess = true;
-                                        } else {
+                                        } else if ($scope.verifyOtpSuccess) {
+
+                                        }else {
                                             $scope.errorInvalidOtp = true;
                                         }
 
@@ -408,9 +410,9 @@ angular.module('platformWebApp')
                 if (n > 2500) {
                     n -= 543;
                 }
-                n -= 100; // age range 1-99 years
-                for (i = 0; i < 100; i++) {
-                    var year = '' + (n + i);
+                //n -= 100; // age range 1-99 years
+                for (i = 0; i <= 100; i++) {
+                    var year = '' + (n - i);
                     $scope.years.push(year);
                 }
             }
