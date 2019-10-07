@@ -1,0 +1,39 @@
+<div class="window">
+    <div class="window-status" ng-if="profileProgress">
+        <div class="progress-bar"></div>
+    </div>
+    <header class="window-head">
+        <img class="__logo" ng-src="{{uiCustomization.contrast_logo || 'Content/themes/main/images/contrast-logo.png'}}" />
+        <span class="window-t">{{ 'platform.blades.gfmarket.profile.title' | translate: (uiCustomization.title ? uiCustomization : { title: 'Virto Commerce' }) }}</span>
+    </header>
+    <div class="window-cnt">
+        <form class="form">
+            <div class="form-group" align="center">
+                <div class="text-warning" style="align-content:center; border-style: solid; border-color: red; width: 60%" ng-if="true">
+                    {{ 'platform.blades.gfmarket.profile.labels.please-upload-documents' | translate }}
+                </div>
+            </div>
+            <div class="form-group" align="center">
+                <button class="btn" ng-click="openUploadDialog()" style="padding: 0px 14px" type="button">
+                    <span>{{ 'platform.blades.gfmarket.profile.labels.upload-document' | translate }}</span>
+                </button>
+            </div>
+            <div class="form-group" align="center">
+                <button class="btn" style="padding: 0px 10px" type="button">
+                    <span>{{ 'platform.blades.gfmarket.profile.labels.edit-member-details' | translate }}</span>
+                </button>
+            </div>
+            <div class="form-group" align="center">
+                <button class="btn" style="padding: 0px 14px" type="button">
+                    <span>{{ 'platform.blades.gfmarket.profile.labels.edit-vendor-details' | translate }}</span>
+                </button>
+            </div>
+
+            <div class="form-group" align="center">
+                <button class="btn __cancel" ng-click="logout()" style="padding: 0px 20px" type="button">
+                    <span>{{ 'platform.blades.gfmarket.profile.labels.logout' | translate }}</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

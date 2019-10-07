@@ -1,0 +1,134 @@
+<div class="window">
+    <div class="window-status" ng-if="uploadProgress">
+        <div class="progress-bar"></div>
+    </div>
+    <header class="window-head">
+        <img class="__logo" ng-src="{{uiCustomization.contrast_logo || 'Content/themes/main/images/contrast-logo.png'}}" />
+        <span class="window-t">{{ 'platform.blades.gfmarket.upload.title' | translate: (uiCustomization.title ? uiCustomization : { title: 'Virto Commerce' }) }}</span>
+    </header>
+    <div class="window-cnt">
+        <form class="form" ng-submit="upload()" name="uploadForm">
+            <div class="form-group">
+                <div class="column" align="center">
+                    <div class="form-input">
+                        <label class="form-label">{{ 'platform.blades.gfmarket.upload.labels.idcard-photo' | translate }}</label>
+                        <div class="image-preview-small" ng-class="{'image-preview-no-image': !user.changeData.idPhoto.values[0].value}" onclick="document.getElementById('idUploader').click()" style="cursor:pointer">
+                            <img ng-if="user.changeData.idPhoto.values[0].value" ng-src="{{user.changeData.idPhoto.values[0].value}}" ng-click="openUrl(user.changeData.idPhoto.values[0].value)" />
+                            <i ng-if="!user.changeData.idPhoto.values[0].value" class="gallery-ico fa fa-image"></i>
+                        </div>
+                        <label style="font-size:small; color:#43b0e6; cursor:pointer" ng-click="isIdPhotoUploading=true">
+                            <input style="display: none;" name="idUploader" id="idUploader" type="file" multiple-attr="false" uploader="uploader" nv-file-select style="z-index: 0;" tabindex="-1" accept="image/*" #idUpload>
+                            Browse
+                        </label>
+                        <span style="font-size:x-small;">|</span>
+                        <a href="" ng-click="user.changeData.idPhoto.values[0].value=''">Delete</a>
+                    </div>
+                </div>
+
+                <div class="column" align="center">
+                    <div class="form-input">
+                        <label class="form-label">{{ 'platform.blades.gfmarket.upload.labels.certificate-photo' | translate }}</label>
+                        <div class="image-preview-small" ng-class="{'image-preview-no-image': !user.changeData.certificatePhoto.values[0].value}" onclick="document.getElementById('certificateUploader').click()" style="cursor:pointer">
+                            <img ng-if="user.changeData.certificatePhoto.values[0].value" ng-src="{{user.changeData.certificatePhoto.values[0].value}}" ng-click="openUrl(user.changeData.certificatePhoto.values[0].value)" />
+                            <i ng-if="!user.changeData.certificatePhoto.values[0].value" class="gallery-ico fa fa-image"></i>
+                        </div>
+                        <label style="font-size:small; color:#43b0e6; cursor:pointer" ng-click="isCertificatePhotoUploading=true">
+                            <input style="display: none;" name="certificateUploader" id="certificateUploader" type="file" multiple-attr="false" uploader="uploader" nv-file-select style="z-index: 0;" tabindex="-1" accept="image/*" #idUpload>
+                            Browse
+                        </label>
+                        <span style="font-size:x-small;">|</span>
+                        <a href="" ng-click="user.changeData.certificatePhoto.values[0].value=''">Delete</a>
+                    </div>
+                </div>
+                <div class="column" align="center">
+                    <div class="form-input">
+                        <label class="form-label">{{ 'platform.blades.gfmarket.upload.labels.bankbook-photo' | translate }}</label>
+                        <div class="image-preview-small" ng-class="{'image-preview-no-image': !user.changeData.bankbookPhoto.values[0].value}" onclick="document.getElementById('bankbookUploader').click()" style="cursor:pointer">
+                            <img ng-if="user.changeData.bankbookPhoto.values[0].value" ng-src="{{user.changeData.bankbookPhoto.values[0].value}}" ng-click="openUrl(user.changeData.bankbookPhoto.values[0].value)" />
+                            <i ng-if="!user.changeData.bankbookPhoto.values[0].value" class="gallery-ico fa fa-image"></i>
+                        </div>
+                        <label style="font-size:small; color:#43b0e6; cursor:pointer" ng-click="isBankbookPhotoUploading=true">
+                            <input style="display: none;" name="bankbookUploader" id="bankbookUploader" type="file" multiple-attr="false" uploader="uploader" nv-file-select style="z-index: 0;" tabindex="-1" accept="image/*" #idUpload>
+                            Browse
+                        </label>
+                        <span style="font-size:x-small;">|</span>
+                        <a href="" ng-click="user.changeData.bankbookPhoto.values[0].value=''">Delete</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="column" align="center">
+                    <div class="form-input">
+                        <label class="form-label">{{ 'platform.blades.gfmarket.upload.labels.additional-document1' | translate }}</label>
+                        <div class="image-preview-small" ng-class="{'image-preview-no-image': !user.changeData.additional1Photo.values[0].value}" onclick="document.getElementById('additional1PhotoUploader').click()" style="cursor:pointer">
+                            <img ng-if="user.changeData.additional1Photo.values[0].value" ng-src="{{user.changeData.additional1Photo.values[0].value}}" ng-click="openUrl(user.changeData.additional1Photo.values[0].value)" />
+                            <i ng-if="!user.changeData.additional1Photo.values[0].value" class="gallery-ico fa fa-image"></i>
+                        </div>
+                        <label style="font-size:small; color:#43b0e6; cursor:pointer" ng-click="isAdditional1PhotoUploading=true">
+                            <input style="display: none;" name="additional1PhotoUploader" id="additional1PhotoUploader" type="file" multiple-attr="false" uploader="uploader" nv-file-select style="z-index: 0;" tabindex="-1" accept="image/*" #idUpload>
+                            Browse
+                        </label>
+                        <span style="font-size:x-small;">|</span>
+                        <a href="" ng-click="user.changeData.additional1Photo.values[0].value=''">Delete</a>
+                    </div>
+                </div>
+                <div class="column" align="center">
+                    <div class="form-input">
+                        <label class="form-label">{{ 'platform.blades.gfmarket.upload.labels.additional-document2' | translate }}</label>
+                        <div class="image-preview-small" ng-class="{'image-preview-no-image': !user.changeData.additional2Photo.values[0].value}" onclick="document.getElementById('additional2PhotoUploader').click()" style="cursor:pointer">
+                            <img ng-if="user.changeData.additional2Photo.values[0].value" ng-src="{{user.changeData.additional2Photo.values[0].value}}" ng-click="openUrl(user.changeData.additional2Photo.values[0].value)" />
+                            <i ng-if="!user.changeData.additional2Photo.values[0].value" class="gallery-ico fa fa-image"></i>
+                        </div>
+                        <label style="font-size:small; color:#43b0e6; cursor:pointer" ng-click="isAdditional2PhotoUploading=true">
+                            <input style="display: none;" name="additional1PhotoUploader" id="additional1PhotoUploader" type="file" multiple-attr="false" uploader="uploader" nv-file-select style="z-index: 0;" tabindex="-1" accept="image/*" #idUpload>
+                            Browse
+                        </label>
+                        <span style="font-size:x-small;">|</span>
+                        <a href="" ng-click="user.changeData.additional2Photo.values[0].value=''">Delete</a>
+                    </div>
+                </div>
+                <div class="column" align="center">
+                    <div class="form-input">
+                        <label class="form-label">{{ 'platform.blades.gfmarket.upload.labels.additional-document3' | translate }}</label>
+                        <div class="image-preview-small" ng-class="{'image-preview-no-image': !user.changeData.additional3Photo.values[0].value}" onclick="document.getElementById('additional3PhotoUploader').click()" style="cursor:pointer">
+                            <img ng-if="user.changeData.additional3Photo.values[0].value" ng-src="{{user.changeData.additional3Photo.values[0].value}}" ng-click="openUrl(user.changeData.additional3Photo.values[0].value)" />
+                            <i ng-if="!user.changeData.additional3Photo.values[0].value" class="gallery-ico fa fa-image"></i>
+                        </div>
+                        <label style="font-size:small; color:#43b0e6; cursor:pointer" ng-click="isAdditional3PhotoUploading=true">
+                            <input style="display: none;" name="additional1PhotoUploader" id="additional1PhotoUploader" type="file" multiple-attr="false" uploader="uploader" nv-file-select style="z-index: 0;" tabindex="-1" accept="image/*" #idUpload>
+                            Browse
+                        </label>
+                        <span style="font-size:x-small;">|</span>
+                        <a href="" ng-click="user.changeData.additional3Photo.values[0].value=''">Delete</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="clearfix" align="center" ng-if="uploadSuccessful">
+                <label class="text-success">{{ 'platform.blades.gfmarket.upload.labels.upload-successful' | translate }}</label>
+            </div>
+
+            <div class="clearfix" align="center" ng-if="uploadFailed">
+                <label class="text-error">{{ 'platform.blades.gfmarket.upload.labels.upload-failed' | translate }}</label>
+            </div>
+
+            <div class="clearfix">
+                <div class="column">
+                    <div class="form-group">
+                        <button ui-sref="profileDialog" class="btn __cancel" ng-disabled="isLoading">
+                            <span>{{ 'platform.blades.gfmarket.register.labels.back' | translate }}</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="form-group __right">
+                        <button class="btn" type="button" ng-click="saveDocuments()" ng-disabled="uploadProgress">
+                            <span>{{ 'platform.blades.gfmarket.register.labels.submit' | translate }}</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

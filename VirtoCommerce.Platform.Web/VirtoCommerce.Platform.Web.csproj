@@ -407,7 +407,9 @@
     <Content Include="Scripts\app\security\dialogs\changeApiSecretKeyDialog.tpl.html" />
     <Content Include="Scripts\app\security\dialogs\changePasswordDialog.tpl.html" />
     <Content Include="Scripts\app\security\gfmarket\dialogs\loginDialog.tpl.html" />
+    <Content Include="Scripts\app\security\gfmarket\dialogs\profileDialog.tpl.html" />
     <Content Include="Scripts\app\security\gfmarket\dialogs\succeededDialog.tpl.html" />
+    <Content Include="Scripts\app\security\gfmarket\dialogs\uploadDialog.tpl.html" />
     <Content Include="Scripts\app\security\gfmarket\dialogs\vendorDialog.tpl.html" />
     <Content Include="Scripts\app\security\gfmarket\dialogs\memberDialog.tpl.html" />
     <Content Include="Scripts\app\security\gfmarket\dialogs\verifyDialog.tpl.html" />

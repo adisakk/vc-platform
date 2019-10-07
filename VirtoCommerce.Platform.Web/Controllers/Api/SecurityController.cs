@@ -375,13 +375,14 @@ namespace VirtoCommerce.Platform.Web.Controllers.Api
         public async Task<IHttpActionResult> RegisterAsync(ApplicationUserExtended user)
         {
             var roleRequest = new RoleSearchRequest();
-            roleRequest.Keyword = "Business Partner (Pre-Approve)";
+            roleRequest.Keyword = "Business Partner (waiting for approval)";
             roleRequest.TakeCount = 1;
             var roleResponse = _roleService.SearchRoles(roleRequest);
             user.Roles = roleResponse.Roles;
             user.UserType = "BusinessPartner";
             //user.UserState = AccountState.PendingApproval;
             user.UserState = AccountState.Approved;
+            user.CreatedBy = "GF.BP.Registrant";
 
             var result = await _securityService.CreateAsync(user);
             return Content(result.Succeeded ? HttpStatusCode.OK : HttpStatusCode.BadRequest, result);

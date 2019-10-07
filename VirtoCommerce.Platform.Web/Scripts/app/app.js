@@ -330,9 +330,12 @@ angular.module('platformWebApp', AppDependencies).
 
             $rootScope.$on('unauthorized', function (event, rejection) {
                 if (!authService.isAuthenticated) {
+                    
                     if ($state.current.name === 'loginDialog') {
                         $state.go('loginDialog');
-                    } else {
+                    } else if ($state.current.name === 'resetpasswordDialog') {
+                        $state.go('resetpasswordDialog');
+                    } else{
                         $state.go('welcomeDialog'); //gfmarket
                     }
                 }
@@ -356,7 +359,28 @@ angular.module('platformWebApp', AppDependencies).
                                 }
                             });
                         } else if (!$state.current.name || $state.current.name === 'loginDialog') {
-                            $state.go('workspace');
+
+                            // Check GFMarket Business partner who is waiting for approval
+                            // TODO Change this code to call API or other better solution.
+                            console.log(authContext);
+                            var haveOrderAccess = false;
+                            if (authContext.permissions != undefined) {
+                                for (var c = 0; c < authContext.permissions.length; c++) {
+                                    if (authContext.permissions[c] == 'order:access') {
+                                        haveOrderAccess = true;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (authContext.userType == 'BusinessPartner' && !haveOrderAccess) {
+                                $rootScope.businessPartnerId = authContext.id;
+                                $rootScope.businessPartnerMemberId = authContext.memberId;
+                                $state.go('profileDialog'); //goto to update profile data or upload documents
+
+                            } else {
+                                $state.go('workspace');
+                            }
                         }
                     } else {
                         if ($state.current.name === 'loginDialog') {
@@ -473,4 +497,10 @@ angular.module('platformWebApp', AppDependencies).
             $rootScope.openSucceededDialog = function () {
                 $state.go('succeededDialog');
             };
+
+            $rootScope.openUploadDialog = function () {
+                $state.go('uploadDialog');
+            };
+
+            $rootScope.logout = authService.logout;
         }]);

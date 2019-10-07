@@ -14,6 +14,8 @@ angular.module('platformWebApp')
         unlock: { url: 'api/platform/security/users/:id/unlock', method: 'POST' },
         register: { url: 'api/platform/security/users/register', method: 'POST' },
         createMemberContact: { url: 'api/members/businesspartner', method: 'POST' },
+        getMemberContact: { url: 'api/members/:id', method: 'GET' },
+        updateMemberContact: { url: 'api/members', method: 'PUT' },
         sendSmsOnetimepassword: { url: 'api/platform/security/onetimepassword/sms/send', method: 'GET' },
         validateSmsOnetimePassword: { url: 'api/platform/security/onetimepassword/sms/validate', method: 'GET' },
         checkUsernameAvailable: { url: 'api/platform/security/users/:userName/available', method: 'GET' }

@@ -135,6 +135,9 @@ angular.module('platformWebApp')
                                 if (distance < 0) {
                                     clearInterval($scope.otpCountdownObj);
                                     $scope.isCountingDown = false;
+                                    if (!verifyOtpSuccess) {
+                                        $scope.otpSent = false;
+                                    }
                                 }
                             }, 1000);
                         }
@@ -214,11 +217,10 @@ angular.module('platformWebApp')
 
                         $scope.user = $rootScope.user;
                         propulateDateDropdownOptions($scope);
-                        console.log($scope.user);
-
+                        
                         $scope.memberProgress = false;
 
-                        $scope.titles = ['Mr.', 'Ms.', 'Mrs', 'Miss'];
+                        $scope.titles = ['Mr.', 'Ms.', 'Mrs.', 'Miss'];
 
                         $scope.member = function () {
                             $scope.memberProgress = true;
@@ -272,45 +274,45 @@ angular.module('platformWebApp')
                             
                             // Set birthdate into dynamic properties
                             var birthdate = {};
-                            birthdate.id = 'd9c5d9cf82a44b2ea80363b77f5de4c8';
+                            //birthdate.id = 'd9c5d9cf82a44b2ea80363b77f5de4c8';
                             birthdate.name = 'Birthday';
                             var bdValue = $scope.user.birth_day + '/' + $scope.user.birth_month + '/' + $scope.user.birth_year;
                             setDynamicValue(bdValue, 'ShortText', objectType, birthdate, member);
 
                             // Set title into dynamic properties
                             var title = {};
-                            title.id = 'abbd526fff39409cb9a8b76f08029dca';
+                            //title.id = 'abbd526fff39409cb9a8b76f08029dca';
                             title.name = 'Title';
                             setDynamicValue($scope.user.title, 'ShortText', objectType, title, member);
 
                             // Set id number into dynamic properties
                             var idnumber = {};
-                            idnumber.id = '0eb27082906b42009476abc7c9309920';
+                            //idnumber.id = '0eb27082906b42009476abc7c9309920';
                             idnumber.name = 'IdNumber';
                             setDynamicValue($scope.user.idcardnumber+'', 'ShortText', objectType, idnumber, member);
 
                             // Set id card expiry date into dynamic properties
                             var idcardexpiry = {};
-                            idcardexpiry.id = 'd87b2e3623434f7aa7e277fdfe84030e';
+                            //idcardexpiry.id = 'd87b2e3623434f7aa7e277fdfe84030e';
                             idcardexpiry.name = 'IdCardExpiryDate';
                             var expiryDate = $scope.user.idcard_expiry_day + '/' + $scope.user.idcard_expiry_month + '/' + $scope.user.idcard_expiry_year;
                             setDynamicValue(expiryDate, 'ShortText', objectType, idcardexpiry, member);
 
                             // Set vendor name into dynamic properties
                             var vendorName = {};
-                            vendorName.id = '24e13d3243c6446ab1196b0137bee70b';
+                            //vendorName.id = '24e13d3243c6446ab1196b0137bee70b';
                             vendorName.name = 'VendorName';
                             setDynamicValue($scope.user.vendorName, 'ShortText', objectType, vendorName, member);
 
                             // Set company name into dynamic properties
                             var companyName = {};
-                            companyName.id = 'fdfed84db75b4b1e803cabf4ebe8fd68';
+                            //companyName.id = 'fdfed84db75b4b1e803cabf4ebe8fd68';
                             companyName.name = 'CompanyName';
                             setDynamicValue($scope.user.companyName, 'ShortText', objectType, companyName, member);
 
                             // Set company registration number into dynamic properties
                             var registrationNumber = {};
-                            registrationNumber.id = '03b4256b32f241cea271b014fd10a555';
+                            //registrationNumber.id = '03b4256b32f241cea271b014fd10a555';
                             registrationNumber.name = 'CompanyRegistrationNumber';
                             var regDate = $scope.user.registration_day + '/' + $scope.user.registration_month + '/' + $scope.user.registration_year;
                             setDynamicValue($scope.user.registrationNumber+'', 'ShortText', objectType, registrationNumber, member);
@@ -318,15 +320,15 @@ angular.module('platformWebApp')
 
                             // Set company registration date into dynamic properties
                             var registrationDate = {};
-                            registrationDate.id = '946cba9e685747399f425efcf73b50f1';
+                            //registrationDate.id = '946cba9e685747399f425efcf73b50f1';
                             registrationDate.name = 'CompanyRegistrationDate';
                             var regDate = $scope.user.registration_day + '/' + $scope.user.registration_month + '/' + $scope.user.registration_year;
                             setDynamicValue(regDate, 'ShortText', objectType, registrationDate, member);
 
                             // Set company registration date into dynamic properties
                             var isBusinessPartner = {};
-                            isBusinessPartner.id = '6934a048eaa14133a511f8c53dc4d956';
-                            isBusinessPartner.name = 'CompanyRegistrationDate';
+                            //isBusinessPartner.id = '6934a048eaa14133a511f8c53dc4d956';
+                            isBusinessPartner.name = 'IsBusinessPartner';
                             setDynamicValue(true, 'Boolean', objectType, isBusinessPartner, member);
 
                             console.log(member);
@@ -368,10 +370,161 @@ angular.module('platformWebApp')
                 ]
             });
 
+        $stateProvider.state('profileDialog',
+            {
+                url: '/profile',
+                templateUrl: '$(Platform)/Scripts/app/security/gfmarket/dialogs/profileDialog.tpl.html',
+                controller: [
+                    '$rootScope', '$scope', 'platformWebApp.accounts', function ($rootScope, $scope, accounts) {
+                        
+                        accounts.getMemberContact({ id: $rootScope.businessPartnerMemberId }).$promise.then(
+                            function (response) {
+                                console.log(response);
+                                $rootScope.user = {};
+                                $rootScope.user.contact = response;
+                            },
+                            function (error) {
+                                console.log(error);
+                            }
+                        );
+                    }
+                ]
+            });
+
+        $stateProvider.state('uploadDialog',
+            {
+                url: '/upload',
+                templateUrl: '$(Platform)/Scripts/app/security/gfmarket/dialogs/uploadDialog.tpl.html',
+                controller: [
+                    '$rootScope', '$scope', 'platformWebApp.accounts', 'FileUploader', function ($rootScope, $scope, accounts, FileUploader) {
+
+                        $scope.uploadProgress = false;
+                        $scope.uploadSuccessful = false;
+                        $scope.uploadFailed = false;
+
+                        $scope.$watch(
+                            function () { return $rootScope.user; },
+                            function (user) {
+                                $scope.user = angular.copy(user);
+
+                                if ($scope.user != undefined) {
+                                    $scope.user.changeData = {};
+                                    $scope.user.changeData.idPhoto = $scope.user.contact.dynamicProperties.find(function (element) {
+                                        return element.name == 'IdPhoto';
+                                    });
+                                    $scope.user.changeData.certificatePhoto = $scope.user.contact.dynamicProperties.find(function (element) {
+                                        return element.name == 'CertificatePhoto';
+                                    });
+                                    $scope.user.changeData.bankbookPhoto = $scope.user.contact.dynamicProperties.find(function (element) {
+                                        return element.name == 'BankbookPhoto';
+                                    });
+                                    $scope.user.changeData.additional1Photo = $scope.user.contact.dynamicProperties.find(function (element) {
+                                        return element.name == 'AdditionalDocument1';
+                                    });
+                                    $scope.user.changeData.additional2Photo = $scope.user.contact.dynamicProperties.find(function (element) {
+                                        return element.name == 'AdditionalDocument2';
+                                    });
+                                    $scope.user.changeData.additional3Photo = $scope.user.contact.dynamicProperties.find(function (element) {
+                                        return element.name == 'AdditionalDocument3';
+                                    });
+                                }
+                            }
+                        );
+
+                        $scope.isIdPhotoUploading = false;
+                        $scope.isCertificatePhotoUploading = false;
+                        $scope.isBankbookPhotoUploading = false;
+                        $scope.isAdditional1PhotoUploading = false;
+                        $scope.isAdditional2PhotoUploading = false;
+                        $scope.isAdditional3PhotoUploading = false;
+
+                        var folderUrl = '/documents/' + $rootScope.businessPartnerId;
+                        function initializeUploader() {
+                            if (!$scope.uploader) {
+                                // Create the uploader
+                                var uploader = $scope.uploader = new FileUploader({
+                                    scope: $scope,
+                                    url: 'api/platform/assets?folderUrl=' + folderUrl,
+                                    method: 'POST',
+                                    autoUpload: true,
+                                    removeAfterUpload: true
+                                });
+
+                                uploader.onSuccessItem = function (fileItem, images) {
+                                    
+                                    if ($scope.isIdPhotoUploading) {
+                                        setPropertyImageValue($scope.user.changeData.idPhoto, images);
+                                        $scope.isIdPhotoUploading = false;
+                                    }
+
+                                    if ($scope.isCertificatePhotoUploading) {
+                                        setPropertyImageValue($scope.user.changeData.certificatePhoto, images);
+                                        $scope.isCertificatePhotoUploading = false;
+                                    }
+
+                                    if ($scope.isBankbookPhotoUploading) {
+                                        setPropertyImageValue($scope.user.changeData.bankbookPhoto, images);
+                                        $scope.isBankbookPhotoUploading = false;
+                                    }
+
+                                    if ($scope.isAdditional1PhotoUploading) {
+                                        setPropertyImageValue($scope.user.changeData.additional1Photo, images);
+                                        $scope.isAdditional1PhotoUploading = false;
+                                    }
+
+                                    if ($scope.isAdditional2PhotoUploading) {
+                                        setPropertyImageValue($scope.user.changeData.additional2Photo, images);
+                                        $scope.isAdditional2PhotoUploading = false;
+                                    }
+
+                                    if ($scope.isAdditional3PhotoUploading) {
+                                        setPropertyImageValue($scope.user.changeData.additional3Photo, images);
+                                        $scope.isAdditional3PhotoUploading = false;
+                                    }
+                                    
+                                };
+                            }
+                        }
+
+                        function setPropertyImageValue(prop, images) {
+                            var value = {};
+                            value.objectId = prop.objectId;
+                            value.objectType = prop.objectType;
+                            value.value = images[0].url;
+                            value.valueType = prop.valueType;
+                            prop.values[0] = value;
+                        }
+
+                        initializeUploader();
+                        
+                        $scope.openUrl = function (url) {
+                            window.open(url, '_blank');
+                        }
+
+                        $scope.saveDocuments = function () {
+                            $scope.uploadProgress = true;
+                            accounts.updateMemberContact($scope.user.contact).$promise.then(
+                                function (response) {
+                                    console.log(response);
+                                    $scope.uploadSuccessful = true;
+                                    $scope.uploadProgress = false;
+                                },
+                                function (error) {
+                                    console.log(error);
+                                    $scope.uploadFailed = true;
+                                    $scope.uploadProgress = false;
+                                }
+                            );
+                        }
+                    }
+                ]
+            });
+
         function setDynamicValue(value, valueType, objectType, property, member) {
             property.objectType = objectType;
             property.valueType = valueType;
             var valueObj = {};
+            valueObj.objectId = property.objectId;
             valueObj.objectType = objectType;
             valueObj.valueType = valueType;
             valueObj.value = value;
@@ -414,6 +567,20 @@ angular.module('platformWebApp')
                 for (i = 0; i <= 100; i++) {
                     var year = '' + (n - i);
                     $scope.years.push(year);
+                }
+            }
+
+            if ($scope.expiryYears == undefined) {
+                $scope.expiryYears = [];
+                var d = new Date();
+                var n = d.getFullYear() + 543;
+                if (n > 2500) {
+                    n -= 543;
+                }
+
+                for (i = 0; i <= 10; i++) {
+                    var year = '' + (n + i);
+                    $scope.expiryYears.push(year);
                 }
             }
         }
