@@ -96,52 +96,34 @@ angular.module('platformWebApp')
                 controller: [
                     '$rootScope', '$scope', 'platformWebApp.accounts', function ($rootScope, $scope, accounts) {
 
+                        $scope.timerRunning = false;
+                        $scope.startTimer = function () {
+                            $scope.$broadcast('timer-start');
+                            $scope.timerRunning = true;
+                        };
+
+                        $scope.stopTimer = function () {
+                            $scope.$broadcast('timer-stop');
+                            $scope.timerRunning = false;
+                        };
+
+                        $scope.$on('timer-stopped', function (event, data) {
+                            console.log('Timer Stopped - data = ', data);
+                            $scope.timerRunning = false;
+                        });
+
                         $scope.user = {};
                         $scope.otpSent = false;
-                        $scope.isCountingDown = false;
-                        $scope.otpCountdownObj = null;
+                        $scope.otpCountdownEndtime = new Date().getTime();
+
                         $scope.errorInvalidOtp = false;
                         $scope.verifyOtpSuccess = false;
                         $scope.errorPasswordNotMatched = false;
                         $scope.verifyProgress = false;
                         $scope.verifyPasswordSuccess = false;
                         $scope.isUsernameAlreadyTaken = false;
-
-                        $scope.setOtpCountdown = function () {
-                            $scope.isCountingDown = true;
-                            // Set the date we're counting down to
-                            var countDownDate = new Date().getTime() + 180000; // 3 minutes
-
-                            // Update the count down every 1 second
-                            $scope.otpCountdownObj = setInterval(function () {
-                                
-                                // Get today's date and time
-                                var now = new Date().getTime();
-
-                                // Find the distance between now and the count down date
-                                var distance = countDownDate - now;
-
-                                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-                                var display = document.getElementById("otpCountdown");
-                                if (display != undefined && (minutes != -1 || seconds != -1)) {
-                                    display.innerHTML = minutes + "m " + seconds + "s ";
-                                } else {
-                                    clearInterval($scope.otpCountdownObj);
-                                }
-                                
-                                // If the count down is over, write some text 
-                                if (distance < 0) {
-                                    clearInterval($scope.otpCountdownObj);
-                                    $scope.isCountingDown = false;
-                                    if (!verifyOtpSuccess) {
-                                        $scope.otpSent = false;
-                                    }
-                                }
-                            }, 1000);
-                        }
-
+                        
+                        
                         $scope.sendOtp = function () {
                             $scope.isUsernameAlreadyTaken = false;
                             $scope.verifyProgress = true;
@@ -152,7 +134,8 @@ angular.module('platformWebApp')
                                     if (checkResult.succeeded) {
                                         accounts.sendSmsOnetimepassword({ phone: $scope.user.phone });
                                         $scope.otpSent = true;
-                                        $scope.setOtpCountdown();
+                                        $scope.otpCountdownEndtime = new Date().getTime() + 300000; // 5 minutes
+                                        $scope.startTimer();
                                     } else {
                                         $scope.otpSent = false;
                                         $scope.isUsernameAlreadyTaken = true;
@@ -175,8 +158,9 @@ angular.module('platformWebApp')
                                         console.log(response);
                                         if (response.succeeded) {
                                             $scope.verifyOtpSuccess = true;
+                                            $scope.stopTimer();
                                         } else if ($scope.verifyOtpSuccess) {
-
+                                            // skip
                                         }else {
                                             $scope.errorInvalidOtp = true;
                                         }
@@ -194,16 +178,17 @@ angular.module('platformWebApp')
                                             clearInterval($scope.otpCountdownObj);
                                             $rootScope.user = $scope.user;
                                             //go to member dialog
-                                            $rootScope.openMemberDialog();
+                                            $rootScope.openMemberDialog('create');
                                         }
                                 },
 
                                 function (response) {
-                                    console.log("Unable to perform get request");
                                     console.log(response);
                                 }
                             );
                         };
+
+                        
                     }
                 ]
             });
@@ -215,18 +200,77 @@ angular.module('platformWebApp')
                 controller: [
                     '$rootScope', '$scope', 'platformWebApp.accounts', function ($rootScope, $scope, accounts) {
 
-                        $scope.user = $rootScope.user;
-                        propulateDateDropdownOptions($scope);
+                        // edit
+                        if ($rootScope.editMemberDetail) {
+                            $scope.$watch(
+                                function () { return $rootScope.user; },
+                                function (user) {
+                                    $scope.user = angular.copy(user);
+
+                                    // put member contact detail into form for editing
+                                    $scope.user.email = $scope.user.contact.emails != undefined ? $scope.user.contact.emails[0] : null;
+                                    $scope.user.title = getDynamicValue('Title', $scope.user.contact);
+                                    $scope.user.firstname = $scope.user.contact.firstName;
+                                    $scope.user.lastname = $scope.user.contact.lastName;
+                                    var bdate = getSeparatedDate(getDynamicValue('Birthday', $scope.user.contact));
+                                    $scope.user.birth_day = bdate[0];
+                                    $scope.user.birth_month = bdate[1];
+                                    $scope.user.birth_year = bdate[2];
+                                    $scope.user.idcardnumber = getDynamicValue('IdNumber', $scope.user.contact);
+                                    var exdate = getSeparatedDate(getDynamicValue('IdCardExpiryDate', $scope.user.contact));;
+                                    $scope.user.idcard_expiry_day = exdate[0];
+                                    $scope.user.idcard_expiry_month = exdate[1];
+                                    $scope.user.idcard_expiry_year = exdate[2];
+                                }
+                             );
+                        } else {
+                            // create
+                            $scope.user = $rootScope.user;
+                        }
+                        
+                        propulateDropdownOptions($scope);
                         
                         $scope.memberProgress = false;
-
-                        $scope.titles = ['Mr.', 'Ms.', 'Mrs.', 'Miss'];
-
+                        
                         $scope.member = function () {
                             $scope.memberProgress = true;
-                            $rootScope.user = $scope.user;
-                            $rootScope.openVendorDialog();
+                            if ($rootScope.editMemberDetail) {
+
+                                setMemberDetail($scope.user, $scope.user.contact);
+
+                                accounts.updateMemberContact($scope.user.contact).$promise.then(
+                                    function (response) {
+                                        console.log(response);
+                                        $scope.updateSuccessful = true;
+                                        $scope.memberProgress = false;
+                                    },
+                                    function (error) {
+                                        console.log(error);
+                                        $scope.updateFailed = true;
+                                        $scope.memberProgress = false;
+                                    }
+                                );
+                            } else {
+                                $rootScope.user = $scope.user;
+                                $rootScope.openVendorDialog('create');
+                            }
+                            
                         }
+
+                        function setMemberDetail(changeData, memberContact) {
+                            memberContact.firstName = changeData.firstname;
+                            memberContact.lastName = changeData.lastname;
+                            memberContact.fullName = changeData.firstname + ' ' + changeData.lastname;
+                            memberContact.emails = [];
+                            memberContact.emails[0] = changeData.email;
+                            setDynamicValue(changeData.idcardnumber, 'IdNumber', memberContact);
+                            var bdValue = getCombinedDate(changeData.birth_day, changeData.birth_month, changeData.birth_year);
+                            setDynamicValue(bdValue, 'Birthday', memberContact);
+                            setDynamicValue(changeData.title, 'Title', memberContact);
+                            var idExpiryDate = getCombinedDate(changeData.idcard_expiry_day, changeData.idcard_expiry_month, changeData.idcard_expiry_year);
+                            setDynamicValue(idExpiryDate, 'IdCardExpiryDate', memberContact);
+                        }
+                        
                     }
                 ]
             });
@@ -238,133 +282,159 @@ angular.module('platformWebApp')
                 controller: [
                     '$rootScope', '$scope', 'platformWebApp.accounts', function ($rootScope, $scope, accounts) {
 
-                        $scope.user = $rootScope.user;
-                        propulateDateDropdownOptions($scope);
-                        console.log($scope.user);
+                        // Edit
+                        if ($rootScope.editVendorDetail) {
+                            $scope.$watch(
+                                function () { return $rootScope.user; },
+                                function (user) {
+                                    $scope.user = angular.copy(user);
+
+                                    // Set vendor details into form for editing
+                                    $scope.user.vendorName = getDynamicValue('VendorName', $scope.user.contact);
+                                    $scope.user.companyName = getDynamicValue('CompanyName', $scope.user.contact);
+                                    $scope.user.registrationNumber = getDynamicValue('CompanyRegistrationNumber', $scope.user.contact);
+                                    var regdate = getSeparatedDate(getDynamicValue('CompanyRegistrationDate', $scope.user.contact));
+                                    $scope.user.registration_day = regdate[0];
+                                    $scope.user.registration_month = regdate[1];
+                                    $scope.user.registration_year = regdate[2];
+                                    
+                                    if ($scope.user.contact.addresses != undefined && $scope.user.contact.addresses[0] != undefined) {
+                                        $scope.user.address = $scope.user.contact.addresses[0].line1;
+                                        $scope.user.city = $scope.user.contact.addresses[0].city;
+                                        $scope.user.postalCode = $scope.user.contact.addresses[0].postalCode;
+                                    }
+                                }
+                            );
+                        } else {
+                            // Create
+                            $scope.user = $rootScope.user;
+                        }
+
+                        propulateDropdownOptions($scope);
 
                         $scope.vendorProgress = false;
                         
                         $scope.vendor = function () {
                             $scope.vendorProgress = true;
-                            $scope.user;
-
-                            console.log($scope.user);
-
-                            // Create member profile
-                            var objectType = 'VirtoCommerce.Domain.Customer.Model.Contact';
-                            var member = {};
-                            member.firstName = $scope.user.firstname;
-                            member.lastName = $scope.user.lastname;
-                            member.fullName = $scope.user.firstname +' '+ $scope.user.lastname;
-                            member.emails = [$scope.user.email];
-                            member.memberType = 'Contact';
-
-                            var address = {};
-                            //address.email = $scope.user.businessEmail;
-                            address.line1 = $scope.user.address;
-                            address.line2 = $scope.user.address2;
-                            address.city = $scope.user.city;
-                            address.countryCode = 'THA';
-                            address.countryName = 'Thailand';
-                            address.postalCode = $scope.user.postalCode;
-                            address.addressType = 3; //BillingAndShipping
-                            member.addresses = [address];
-                            member.createdBy = 'GF.BP.Registrant';
-                            member.dynamicProperties = [];
                             
-                            // Set birthdate into dynamic properties
-                            var birthdate = {};
-                            //birthdate.id = 'd9c5d9cf82a44b2ea80363b77f5de4c8';
-                            birthdate.name = 'Birthday';
-                            var bdValue = $scope.user.birth_day + '/' + $scope.user.birth_month + '/' + $scope.user.birth_year;
-                            setDynamicValue(bdValue, 'ShortText', objectType, birthdate, member);
+                            // Update
+                            if ($rootScope.editVendorDetail) {
 
-                            // Set title into dynamic properties
-                            var title = {};
-                            //title.id = 'abbd526fff39409cb9a8b76f08029dca';
-                            title.name = 'Title';
-                            setDynamicValue($scope.user.title, 'ShortText', objectType, title, member);
+                                setVendorDetail($scope.user, $scope.user.contact);
+                                console.log($scope.user.contact);
+                                accounts.updateMemberContact($scope.user.contact).$promise.then(
+                                    function (response) {
+                                        console.log(response);
+                                        $scope.updateSuccessful = true;
+                                        $scope.vendorProgress = false;
+                                    },
+                                    function (error) {
+                                        console.log(error);
+                                        $scope.updateFailed = true;
+                                        $scope.vendorProgress = false;
+                                    }
+                                );
 
-                            // Set id number into dynamic properties
-                            var idnumber = {};
-                            //idnumber.id = '0eb27082906b42009476abc7c9309920';
-                            idnumber.name = 'IdNumber';
-                            setDynamicValue($scope.user.idcardnumber+'', 'ShortText', objectType, idnumber, member);
-
-                            // Set id card expiry date into dynamic properties
-                            var idcardexpiry = {};
-                            //idcardexpiry.id = 'd87b2e3623434f7aa7e277fdfe84030e';
-                            idcardexpiry.name = 'IdCardExpiryDate';
-                            var expiryDate = $scope.user.idcard_expiry_day + '/' + $scope.user.idcard_expiry_month + '/' + $scope.user.idcard_expiry_year;
-                            setDynamicValue(expiryDate, 'ShortText', objectType, idcardexpiry, member);
-
-                            // Set vendor name into dynamic properties
-                            var vendorName = {};
-                            //vendorName.id = '24e13d3243c6446ab1196b0137bee70b';
-                            vendorName.name = 'VendorName';
-                            setDynamicValue($scope.user.vendorName, 'ShortText', objectType, vendorName, member);
-
-                            // Set company name into dynamic properties
-                            var companyName = {};
-                            //companyName.id = 'fdfed84db75b4b1e803cabf4ebe8fd68';
-                            companyName.name = 'CompanyName';
-                            setDynamicValue($scope.user.companyName, 'ShortText', objectType, companyName, member);
-
-                            // Set company registration number into dynamic properties
-                            var registrationNumber = {};
-                            //registrationNumber.id = '03b4256b32f241cea271b014fd10a555';
-                            registrationNumber.name = 'CompanyRegistrationNumber';
-                            var regDate = $scope.user.registration_day + '/' + $scope.user.registration_month + '/' + $scope.user.registration_year;
-                            setDynamicValue($scope.user.registrationNumber+'', 'ShortText', objectType, registrationNumber, member);
+                            } else {
+                                // Create member contact
+                                var objectType = 'VirtoCommerce.Domain.Customer.Model.Contact';
+                                var member = {};
+                                member.memberType = 'Contact';
+                                member.firstName = $scope.user.firstname;
+                                member.lastName = $scope.user.lastname;
+                                member.fullName = $scope.user.firstname + ' ' + $scope.user.lastname;
+                                member.emails = [$scope.user.email];
 
 
-                            // Set company registration date into dynamic properties
-                            var registrationDate = {};
-                            //registrationDate.id = '946cba9e685747399f425efcf73b50f1';
-                            registrationDate.name = 'CompanyRegistrationDate';
-                            var regDate = $scope.user.registration_day + '/' + $scope.user.registration_month + '/' + $scope.user.registration_year;
-                            setDynamicValue(regDate, 'ShortText', objectType, registrationDate, member);
+                                var address = {};
+                                //address.email = $scope.user.businessEmail;
+                                address.line1 = $scope.user.address;
+                                address.line2 = $scope.user.address2;
+                                address.city = $scope.user.city;
+                                address.countryCode = 'THA';
+                                address.countryName = 'Thailand';
+                                address.postalCode = $scope.user.postalCode;
+                                address.addressType = 3; //BillingAndShipping
+                                member.addresses = [address];
+                                member.createdBy = 'GF.BP.Registrant';
+                                member.dynamicProperties = [];
+                                
+                                // Set birthdate into dynamic properties
+                                var bdValue = getCombinedDate($scope.user.birth_day, $scope.user.birth_month, $scope.user.birth_year);
+                                member.dynamicProperties.push(createDynamicObject('Birthday', bdValue, 'ShortText', objectType));
 
-                            // Set company registration date into dynamic properties
-                            var isBusinessPartner = {};
-                            //isBusinessPartner.id = '6934a048eaa14133a511f8c53dc4d956';
-                            isBusinessPartner.name = 'IsBusinessPartner';
-                            setDynamicValue(true, 'Boolean', objectType, isBusinessPartner, member);
+                                // Set title into dynamic properties
+                                member.dynamicProperties.push(createDynamicObject('Title', $scope.user.title, 'ShortText', objectType));
 
-                            console.log(member);
-                            accounts.createMemberContact(member).$promise.then(
-                                function (memberResult) {
-                                    console.log(memberResult);
+                                // Set id card number into dynamic properties
+                                member.dynamicProperties.push(createDynamicObject('IdNumber', $scope.user.idcardnumber + '', 'ShortText', objectType));
 
-                                    // Create user login
-                                    var user = {};
-                                    user.memberId = memberResult.id;
-                                    user.userName = $scope.user.phone;
-                                    user.phoneNumber = $scope.user.phone;
-                                    user.phoneNumberConfirmed = true;
-                                    //user.storeId
-                                    user.password = $scope.user.password;
-                                    accounts.register(user).$promise.then(
+                                // Set id card expiry date into dynamic properties
+                                var expiryDate = getCombinedDate($scope.user.idcard_expiry_day, $scope.user.idcard_expiry_month, $scope.user.idcard_expiry_year);
+                                member.dynamicProperties.push(createDynamicObject('IdCardExpiryDate', expiryDate, 'ShortText', objectType));
 
-                                        function (userResult) {
-                                            console.log(userResult);
-                                            $rootScope.openSucceededDialog();
-                                        },
+                                // Set vendor name into dynamic properties
+                                member.dynamicProperties.push(createDynamicObject('VendorName', $scope.user.vendorName, 'ShortText', objectType));
 
-                                        function (userError) {
-                                            console.log(userError);
-                                            $scope.vendorProgress = false;
-                                            $scope.regisError = userError.data.errors[0];
-                                        }
-                                    );
-                                },
+                                // Set company name into dynamic properties
+                                member.dynamicProperties.push(createDynamicObject('CompanyName', $scope.user.companyName, 'ShortText', objectType));
 
-                                function (memberError) {
-                                    console.log(memberError);
-                                    $scope.vendorProgress = false;
-                                }
-                            );
+                                // Set company registration number into dynamic properties
+                                member.dynamicProperties.push(createDynamicObject('CompanyRegistrationNumber', $scope.user.registrationNumber + '', 'ShortText', objectType));
+
+                                // Set company registration date into dynamic properties
+                                var regDate = getCombinedDate($scope.user.registration_day, $scope.user.registration_month, $scope.user.registration_year);
+                                member.dynamicProperties.push(createDynamicObject('CompanyRegistrationDate', regDate, 'ShortText', objectType));
+
+                                // Set company registration date into dynamic properties
+                                member.dynamicProperties.push(createDynamicObject('IsBusinessPartner', true, 'Boolean', objectType));
+
+                                accounts.createMemberContact(member).$promise.then(
+                                    function (memberResult) {
+
+                                        // Create user login
+                                        var user = {};
+                                        user.memberId = memberResult.id;
+                                        user.userName = $scope.user.phone;
+                                        user.phoneNumber = $scope.user.phone;
+                                        user.phoneNumberConfirmed = true;
+                                        //user.storeId
+                                        user.password = $scope.user.password;
+                                        accounts.register(user).$promise.then(
+
+                                            function (userResult) {
+                                                //console.log(userResult);
+                                                $rootScope.openSucceededDialog();
+                                            },
+
+                                            function (userError) {
+                                                console.log(userError);
+                                                $scope.vendorProgress = false;
+                                                $scope.regisError = userError.data.errors[0];
+                                            }
+                                        );
+                                    },
+
+                                    function (memberError) {
+                                        console.log(memberError);
+                                        $scope.vendorProgress = false;
+                                    }
+                                );
+                            } 
                             
+                        }
+
+                        function setVendorDetail(changeData, memberContact) {
+                            setDynamicValue(changeData.vendorName, 'VendorName', memberContact);
+                            setDynamicValue(changeData.companyName, 'CompanyName', memberContact);
+                            setDynamicValue(changeData.registrationNumber, 'CompanyRegistrationNumber', memberContact);
+
+                            var regValue = getCombinedDate(changeData.registration_day, changeData.registration_month, changeData.registration_year);
+                            setDynamicValue(regValue, 'CompanyRegistrationDate', memberContact);
+                            
+                            $scope.user.contact.addresses[0].line1 = changeData.address;
+                            $scope.user.contact.addresses[0].city = changeData.city;
+                            $scope.user.contact.addresses[0].postalCode = changeData.postalCode;
                         }
                     }
                 ]
@@ -379,7 +449,6 @@ angular.module('platformWebApp')
                         
                         accounts.getMemberContact({ id: $rootScope.businessPartnerMemberId }).$promise.then(
                             function (response) {
-                                console.log(response);
                                 $rootScope.user = {};
                                 $rootScope.user.contact = response;
                             },
@@ -398,6 +467,7 @@ angular.module('platformWebApp')
                 controller: [
                     '$rootScope', '$scope', 'platformWebApp.accounts', 'FileUploader', function ($rootScope, $scope, accounts, FileUploader) {
 
+                        $scope.isDocumentChanged = false;
                         $scope.uploadProgress = false;
                         $scope.uploadSuccessful = false;
                         $scope.uploadFailed = false;
@@ -481,6 +551,8 @@ angular.module('platformWebApp')
                                         setPropertyImageValue($scope.user.changeData.additional3Photo, images);
                                         $scope.isAdditional3PhotoUploading = false;
                                     }
+
+                                    $scope.isDocumentChanged = true;
                                     
                                 };
                             }
@@ -502,6 +574,7 @@ angular.module('platformWebApp')
                         }
 
                         $scope.saveDocuments = function () {
+                            $scope.isDocumentChanged = false;
                             $scope.uploadProgress = true;
                             accounts.updateMemberContact($scope.user.contact).$promise.then(
                                 function (response) {
@@ -520,20 +593,77 @@ angular.module('platformWebApp')
                 ]
             });
 
-        function setDynamicValue(value, valueType, objectType, property, member) {
+        function getSeparatedDate(date) {
+            if (date != undefined) {
+                return date.split('/');
+            } else {
+                return ['', '', ''];
+            }
+        }
+
+        function getCombinedDate(day, month, year) {
+            if (day == undefined) {
+                day = '00';
+            }
+            if (month == undefined) {
+                month = '00';
+            }
+            if (year == undefined) {
+                year = '0000';
+            }
+            return day + '/' + month + '/' + year;
+        }
+
+        function getDynamicValue(name, memberContact) {
+            
+            var prop = getDynamicObject(name, memberContact)
+
+            if (prop != undefined && prop.values != undefined && prop.values[0]) {
+                return prop.values[0].value;
+            } else {
+                return null;
+            }
+        }
+
+        function getDynamicObject(name, memberContact) {
+            return memberContact.dynamicProperties.find(function (element) {
+                return element.name == name;
+            });
+        }
+
+        function setDynamicValue(value, name, memberContact) {
+            //console.log(value + ',' + name);
+            //console.log(memberContact);
+            var property = getDynamicObject(name, memberContact);
+            if (property.values[0] != undefined) {
+                property.values[0].value = value;
+            } else {
+                property.values[0] = createDynamicObject(name, value, property.valueType, property.objectType);
+            }
+            
+        }
+
+        function createDynamicObject(name, value, valueType, objectType) {
+            //console.log(name + "," + value + "," + valueType + "," + objectType);
+            var property = {};
+            property.name = name;
             property.objectType = objectType;
             property.valueType = valueType;
             var valueObj = {};
-            valueObj.objectId = property.objectId;
+            //valueObj.objectId = property.objectId;
             valueObj.objectType = objectType;
             valueObj.valueType = valueType;
             valueObj.value = value;
             property.values = [valueObj];
-            member.dynamicProperties.push(property);
+            return property;
         }
 
-        function propulateDateDropdownOptions($scope) {
-            // Populate dropdown options: days, months, years
+        function propulateDropdownOptions($scope) {
+
+            // Title
+            $scope.titles = ['Mr.', 'Ms.', 'Mrs.', 'Miss'];
+
+            // days, months, years
             if ($scope.days == undefined) {
                 $scope.days = [];
                 for (i = 1; i <= 31; i++) {

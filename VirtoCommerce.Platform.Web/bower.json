@@ -38,11 +38,13 @@
     "modernizr": "2.8.3",
     "underscore": "1.8.3",
     "angular-filter": "0.5.8",
-    "angular-local-storage": "^0.7.1"
+    "angular-local-storage": "^0.7.1",
+    "angular-timer": "v1.3.5"
   },
   "resolutions": {
     "angular": "1.4.4",
-    "angular-translate": "~2.15.2"
+    "angular-translate": "~2.15.2",
+    "moment": ">=2.8.0 <3.0.0"
   },
   "overrides": {
     "angular": {

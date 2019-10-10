@@ -11,7 +11,7 @@
             <div class="form-group">
                 <label class="form-label">{{ 'platform.blades.gfmarket.register.labels.phone-number' | translate }}</label>
                 <div class="form-input">
-                    <input type="tel" name="phoneNumber" ng-model="user.phone" ng-disabled="verifyOtpSuccess || otpSent" required autofocus pattern="[0]{1}[0-9]{9}" maxlength="10">
+                    <input type="tel" name="phoneNumber" ng-model="user.phone" ng-change="isUsernameAlreadyTaken=false" ng-disabled="verifyOtpSuccess || otpSent" required autofocus pattern="[0]{1}[0-9]{9}" maxlength="10">
                 </div>
             </div>
             <div class="form-group">
@@ -19,14 +19,21 @@
                     {{ 'platform.blades.gfmarket.register.labels.phone-number-already-taken' | translate }}
                 </div>
             </div>
-            <div class="form-group">
+            <div class="form-group" ng-if="!timerRunning">
                 <div class="form-input">
-                    <button class="btn-normal" style="padding: 0px 10px; height:30px; width:80px" type="button" ng-click="sendOtp()" ng-disabled="!user.phone || verifyProgress || isCountingDown">
-                        <span ng-if="!isCountingDown">{{ 'platform.blades.gfmarket.register.labels.send-otp' | translate }}</span>
-                        <span ng-if="isCountingDown" id="otpCountdown">2m 59s</span>
+                    <button class="btn-normal" style="padding: 0px 10px; height:30px; width:80px" type="button" ng-click="sendOtp()" ng-disabled="!user.phone || verifyProgress">
+                        <span>{{ 'platform.blades.gfmarket.register.labels.send-otp' | translate }}</span>
                     </button>
                 </div>
             </div>
+            <div class="form-group" ng-if="timerRunning">
+                <div class="form-input">
+                    <button class="btn-normal" style="padding: 0px 10px; height:30px; width:80px" type="button" ng-disabled="true">
+                        <span><timer interval="100" end-time="otpCountdownEndtime">{{minutes}}m {{seconds}}s</timer></span>
+                    </button>
+                </div>
+            </div>
+            
             <div class="form-group">
                 <label class="form-label">{{ 'platform.blades.gfmarket.register.labels.enter-otp' | translate }}</label>
                 <div class="form-input">

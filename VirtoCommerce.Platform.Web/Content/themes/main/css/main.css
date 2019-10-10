@@ -169,7 +169,7 @@ fieldset {
 
 .window .window-head,
 .modal-content .modal-header {
-  background: #333;
+  background: #505050;
   height: 40px;
   line-height: 36px;
   position: relative;
@@ -1639,7 +1639,7 @@ label.form-control {
 
 /* Buttons */
 .btn {
-  background: #43b0e6;
+  background: #652D90;
   border: none;
   color: #fff;
   cursor: pointer;
@@ -1686,7 +1686,7 @@ button.btn {
     background-color: #a0a0a0; }
 
 .btn-normal {
-    background: #43b0e6;
+    background: #652D90;
     border: none;
     color: #fff;
     cursor: pointer;

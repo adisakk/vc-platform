@@ -21,7 +21,7 @@
                             Browse
                         </label>
                         <span style="font-size:x-small;">|</span>
-                        <a href="" ng-click="user.changeData.idPhoto.values[0].value=''">Delete</a>
+                        <a href="" ng-click="user.changeData.idPhoto.values[0].value='';isDocumentChanged=true">Delete</a>
                     </div>
                 </div>
 
@@ -37,7 +37,7 @@
                             Browse
                         </label>
                         <span style="font-size:x-small;">|</span>
-                        <a href="" ng-click="user.changeData.certificatePhoto.values[0].value=''">Delete</a>
+                        <a href="" ng-click="user.changeData.certificatePhoto.values[0].value='';isDocumentChanged=true">Delete</a>
                     </div>
                 </div>
                 <div class="column" align="center">
@@ -52,7 +52,7 @@
                             Browse
                         </label>
                         <span style="font-size:x-small;">|</span>
-                        <a href="" ng-click="user.changeData.bankbookPhoto.values[0].value=''">Delete</a>
+                        <a href="" ng-click="user.changeData.bankbookPhoto.values[0].value='';isDocumentChanged=true">Delete</a>
                     </div>
                 </div>
             </div>
@@ -70,7 +70,7 @@
                             Browse
                         </label>
                         <span style="font-size:x-small;">|</span>
-                        <a href="" ng-click="user.changeData.additional1Photo.values[0].value=''">Delete</a>
+                        <a href="" ng-click="user.changeData.additional1Photo.values[0].value='';isDocumentChanged=true">Delete</a>
                     </div>
                 </div>
                 <div class="column" align="center">
@@ -81,11 +81,11 @@
                             <i ng-if="!user.changeData.additional2Photo.values[0].value" class="gallery-ico fa fa-image"></i>
                         </div>
                         <label style="font-size:small; color:#43b0e6; cursor:pointer" ng-click="isAdditional2PhotoUploading=true">
-                            <input style="display: none;" name="additional1PhotoUploader" id="additional1PhotoUploader" type="file" multiple-attr="false" uploader="uploader" nv-file-select style="z-index: 0;" tabindex="-1" accept="image/*" #idUpload>
+                            <input style="display: none;" name="additional2PhotoUploader" id="additional2PhotoUploader" type="file" multiple-attr="false" uploader="uploader" nv-file-select style="z-index: 0;" tabindex="-1" accept="image/*" #idUpload>
                             Browse
                         </label>
                         <span style="font-size:x-small;">|</span>
-                        <a href="" ng-click="user.changeData.additional2Photo.values[0].value=''">Delete</a>
+                        <a href="" ng-click="user.changeData.additional2Photo.values[0].value='';isDocumentChanged=true">Delete</a>
                     </div>
                 </div>
                 <div class="column" align="center">
@@ -96,11 +96,11 @@
                             <i ng-if="!user.changeData.additional3Photo.values[0].value" class="gallery-ico fa fa-image"></i>
                         </div>
                         <label style="font-size:small; color:#43b0e6; cursor:pointer" ng-click="isAdditional3PhotoUploading=true">
-                            <input style="display: none;" name="additional1PhotoUploader" id="additional1PhotoUploader" type="file" multiple-attr="false" uploader="uploader" nv-file-select style="z-index: 0;" tabindex="-1" accept="image/*" #idUpload>
+                            <input style="display: none;" name="additional3PhotoUploader" id="additional3PhotoUploader" type="file" multiple-attr="false" uploader="uploader" nv-file-select style="z-index: 0;" tabindex="-1" accept="image/*" #idUpload>
                             Browse
                         </label>
                         <span style="font-size:x-small;">|</span>
-                        <a href="" ng-click="user.changeData.additional3Photo.values[0].value=''">Delete</a>
+                        <a href="" ng-click="user.changeData.additional3Photo.values[0].value='';isDocumentChanged=true">Delete</a>
                     </div>
                 </div>
             </div>
@@ -123,7 +123,7 @@
                 </div>
                 <div class="column">
                     <div class="form-group __right">
-                        <button class="btn" type="button" ng-click="saveDocuments()" ng-disabled="uploadProgress">
+                        <button class="btn" type="button" ng-click="saveDocuments()" ng-disabled="uploadProgress || !isDocumentChanged">
                             <span>{{ 'platform.blades.gfmarket.register.labels.submit' | translate }}</span>
                         </button>
                     </div>

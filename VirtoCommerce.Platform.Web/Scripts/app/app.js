@@ -24,7 +24,8 @@ var AppDependencies = [
     'tmh.dynamicLocale',
     'pascalprecht.translate',
     'angular.filter',
-    'LocalStorageModule'
+    'LocalStorageModule',
+    'timer'
 ];
 
 angular.module('platformWebApp', AppDependencies).
@@ -55,6 +56,7 @@ angular.module('platformWebApp', AppDependencies).
 
 
             $scope.$on('httpError', function (event, error) {
+                console.log(error);
                 if (!event.defaultPrevented) {
                     if (bladeNavigationService.currentBlade) {
                         bladeNavigationService.setError(error, bladeNavigationService.currentBlade);
@@ -362,7 +364,6 @@ angular.module('platformWebApp', AppDependencies).
 
                             // Check GFMarket Business partner who is waiting for approval
                             // TODO Change this code to call API or other better solution.
-                            console.log(authContext);
                             var haveOrderAccess = false;
                             if (authContext.permissions != undefined) {
                                 for (var c = 0; c < authContext.permissions.length; c++) {
@@ -486,11 +487,24 @@ angular.module('platformWebApp', AppDependencies).
                 $state.go('verifyDialog');
             };
 
-            $rootScope.openMemberDialog = function () {
+            $rootScope.editMemberDetail = false;
+            $rootScope.openMemberDialog = function (mode) {
+                if (mode == 'edit') {
+                    $rootScope.editMemberDetail = true;
+                } else {
+                    $rootScope.editMemberDetail = false;
+                }
+                
                 $state.go('memberDialog');
             };
 
-            $rootScope.openVendorDialog = function () {
+            $rootScope.editVendorDetail = false;
+            $rootScope.openVendorDialog = function (mode) {
+                if (mode == 'edit') {
+                    $rootScope.editVendorDetail = true;
+                } else {
+                    $rootScope.editVendorDetail = false;
+                }
                 $state.go('vendorDialog');
             };
 

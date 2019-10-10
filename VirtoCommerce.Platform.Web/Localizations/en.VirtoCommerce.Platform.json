@@ -544,9 +544,14 @@
       "gfmarket": {
         "welcome": {
           "labels": {
-            "gfmarket-management-system": "E-Market Giving Forward Management System",
-            "create-bp-account": "Create partner account",
-            "login-to-system": "Management system"
+            "gfmarket-management-system": "GF Market Managment System",
+            "create-bp-account": "New Business Partner Registration",
+            "login-to-system": "Login GF Market Managment"
+          }
+        },
+        "login": {
+          "labels": {
+            "auth-error": "The user name or password is incorrect."
           }
         },
         "register": {
@@ -603,6 +608,8 @@
             "upload-document": "Upload documents",
             "edit-member-details": "Edit member details",
             "edit-vendor-details": "Edit vendor details",
+            "update-successful": "Update successful.",
+            "update-failed": "Update failed.",
             "logout": "Logout"
           }
         },

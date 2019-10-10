@@ -4,7 +4,8 @@
     </div>
     <header class="window-head">
         <img class="__logo" ng-src="{{uiCustomization.contrast_logo || 'Content/themes/main/images/contrast-logo.png'}}" />
-        <span class="window-t">{{ 'platform.blades.gfmarket.register.labels.bp-vendor-information' | translate: (uiCustomization.title ? uiCustomization : { title: 'Virto Commerce' }) }}</span>
+        <span ng-if="!editVendorDetail" class="window-t">{{ 'platform.blades.gfmarket.register.labels.bp-vendor-information' | translate: (uiCustomization.title ? uiCustomization : { title: 'Virto Commerce' }) }}</span>
+        <span ng-if="editVendorDetail" class="window-t">{{ 'platform.blades.gfmarket.profile.labels.edit-vendor-details' | translate: (uiCustomization.title ? uiCustomization : { title: 'Virto Commerce' }) }}</span>
     </header>
     <div class="window-cnt">
         <form class="form" ng-submit="vendor()" name="vendorForm">
@@ -82,7 +83,7 @@
                     <div class="column">
                         <label class="form-label">{{ 'platform.blades.gfmarket.register.labels.postal-code' | translate }}</label>
                         <div class="form-input">
-                            <input name="postalCode" type="number" ng-model="user.postalCode" required>
+                            <input name="postalCode" type="text" ng-model="user.postalCode" pattern="[0-9]{5}" maxlength="5" required>
                         </div>
                     </div>
                 </div>
@@ -96,6 +97,13 @@
                 </div>
             </div>
             -->
+            <div class="clearfix" align="center" ng-if="updateSuccessful">
+                <label class="text-success">{{ 'platform.blades.gfmarket.profile.labels.update-successful' | translate }}</label>
+            </div>
+
+            <div class="clearfix" align="center" ng-if="updateFailed">
+                <label class="text-error">{{ 'platform.blades.gfmarket.profile.labels.update-failed' | translate }}</label>
+            </div>
 
             <div class="form-group">
                 <div class="form-error" ng-if="regisError" style="align-content:center">
@@ -104,9 +112,16 @@
             </div>
 
             <div class="clearfix">
-                <div class="column">
+                <div class="column" ng-if="!editVendorDetail">
                     <div class="form-group">
                         <button ui-sref="memberDialog" class="btn __cancel" ng-disabled="isLoading">
+                            <span>{{ 'platform.blades.gfmarket.register.labels.back' | translate }}</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="column" ng-if="editVendorDetail">
+                    <div class="form-group">
+                        <button ui-sref="profileDialog" class="btn __cancel" ng-disabled="isLoading">
                             <span>{{ 'platform.blades.gfmarket.register.labels.back' | translate }}</span>
                         </button>
                     </div>
