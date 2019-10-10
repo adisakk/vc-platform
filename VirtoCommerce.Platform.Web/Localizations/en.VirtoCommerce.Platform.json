@@ -462,7 +462,8 @@
           "name": "Name",
           "account-type": "Account type",
           "login": "Login",
-          "state": "State"
+          "state": "State",
+          "businesspartner-status":  "Status"
         }
       },
       "role-detail": {

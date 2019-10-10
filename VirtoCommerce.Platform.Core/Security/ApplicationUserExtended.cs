@@ -55,6 +55,8 @@ namespace VirtoCommerce.Platform.Core.Security
         [JsonConverter(typeof(StringEnumConverter))]
         public AccountState UserState { get; set; }
 
+        public String BusinessPartnerStatus { get; set; }
+
         public string Password { get; set; }
         /// <summary>
         /// The flag indicates that user password is expired and must be changed

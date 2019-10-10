@@ -399,10 +399,33 @@ namespace VirtoCommerce.Platform.Data.Security
             {
                 foreach (var user in users)
                 {
-                    var extendedUser = await FindByNameAsync(user.UserName, UserDetails.Reduced);
+                    //var extendedUser = await FindByNameAsync(user.UserName, UserDetails.Reduced);
+                    var extendedUser = await FindByNameAsync(user.UserName, UserDetails.Full); // Get role for check BP status.
                     if (extendedUser != null)
                     {
                         extendedUsers.Add(extendedUser);
+
+                        // TODO Create BP status in database table and use it as indicator instead of this quick workaround method.
+                        // Add BP status by checking role
+                        if (extendedUser.UserType == "BusinessPartner")
+                        {
+                            foreach (var role in extendedUser.Roles)
+                            {
+                                if (role.Name == "Business Partner")
+                                {
+                                    extendedUser.BusinessPartnerStatus = extendedUser.UserState.ToString();
+                                    break;
+                                }
+                                else
+                                {
+                                    extendedUser.BusinessPartnerStatus = "Pending Approval";
+                                }
+                            }
+                        } else
+                        {
+                            extendedUser.BusinessPartnerStatus = extendedUser.UserState.ToString();
+                        }
+                        
                     }
                 }
             }

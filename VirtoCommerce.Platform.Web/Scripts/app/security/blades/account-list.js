@@ -1,4 +1,4 @@
-﻿angular.module('platformWebApp')
+angular.module('platformWebApp')
 .controller('platformWebApp.accountListController', ['$scope', 'platformWebApp.accounts', 'platformWebApp.dialogService', 'platformWebApp.uiGridHelper', 'platformWebApp.bladeNavigationService', 'platformWebApp.bladeUtils',
 function ($scope, accounts, dialogService, uiGridHelper, bladeNavigationService, bladeUtils) {
     $scope.uiGridConstants = uiGridHelper.uiGridConstants;
