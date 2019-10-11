@@ -479,6 +479,10 @@ angular.module('platformWebApp', AppDependencies).
                 $compile(template);
             });
 
+            $rootScope.openWelcomeDialog = function () {
+                $state.go('welcomeDialog');
+            };
+
             $rootScope.openLoginDialog = function () {
                 $state.go('loginDialog');
             };

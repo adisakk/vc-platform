@@ -57,7 +57,7 @@
             <div class="clearfix">
                 <div class="column">
                     <div class="form-group">
-                        <button ui-sref="welcomeDialog" class="btn __cancel" ng-disabled="isLoading">
+                        <button class="btn __cancel" type="button" ng-click="openWelcomeDialog()" ng-disabled="isLoading">
                             <span>{{ 'platform.blades.forgotpassword.labels.back' | translate }}</span>
                         </button>
                     </div>
