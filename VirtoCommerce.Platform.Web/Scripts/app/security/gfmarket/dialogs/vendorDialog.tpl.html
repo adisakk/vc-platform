@@ -26,7 +26,7 @@
             <div class="form-group">
                 <label class="form-label">{{ 'platform.blades.gfmarket.register.labels.company-registration-number' | translate }}</label>
                 <div class="form-input">
-                    <input type="text" name="registrationNumber" ng-model="user.registrationNumber" pattern="[0-9]{13}" maxlength="13" autofocus>
+                    <input type="text" name="registrationNumber" ng-model="user.registrationNumber" pattern="[0-9]{13}" maxlength="13" autofocus only-numbers>
                 </div>
             </div>
 
@@ -83,7 +83,7 @@
                     <div class="column">
                         <label class="form-label">{{ 'platform.blades.gfmarket.register.labels.postal-code' | translate }}</label>
                         <div class="form-input">
-                            <input name="postalCode" type="text" ng-model="user.postalCode" pattern="[0-9]{5}" maxlength="5" required>
+                            <input name="postalCode" type="text" ng-model="user.postalCode" pattern="[0-9]{5}" maxlength="5" required only-numbers>
                         </div>
                     </div>
                 </div>

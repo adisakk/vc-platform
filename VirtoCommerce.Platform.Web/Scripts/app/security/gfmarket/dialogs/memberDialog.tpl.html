@@ -74,7 +74,7 @@
             <div class="form-group">
                 <label class="form-label">{{ 'platform.blades.gfmarket.register.labels.idcard_number' | translate }}</label>
                 <div class="form-input">
-                    <input name="idcardnumber" type="text" ng-model="user.idcardnumber" pattern="[0-9]{13}" maxlength="13" required>
+                    <input name="idcardnumber" type="text" ng-model="user.idcardnumber" pattern="[0-9]{13}" maxlength="13" required only-numbers>
                 </div>
             </div>
 
