@@ -7,14 +7,6 @@ angular.module('platformWebApp')
                 templateUrl: '$(Platform)/Scripts/app/security/gfmarket/welcome.tpl.html',
                 controller: [
                     '$scope', 'platformWebApp.authService', 'platformWebApp.externalSignInService', function ($scope, authService, externalSignInService) {
-                        externalSignInService.getProviders().then(
-                            function (response) {
-                                $scope.externalLoginProviders = response.data;
-                            });
-
-                        $scope.user = {};
-                        $scope.authError = null;
-                        $scope.authReason = false;
                         
                     }
                 ]
