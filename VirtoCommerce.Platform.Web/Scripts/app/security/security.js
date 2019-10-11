@@ -7,7 +7,11 @@ angular.module('platformWebApp')
                 templateUrl: '$(Platform)/Scripts/app/security/gfmarket/welcome.tpl.html',
                 controller: [
                     '$scope', 'platformWebApp.authService', 'platformWebApp.externalSignInService', function ($scope, authService, externalSignInService) {
-                        
+
+                        $scope.user = {};
+                        $scope.authError = null;
+                        $scope.authReason = false;
+                        $scope.loginProgress = false;
                     }
                 ]
             });
